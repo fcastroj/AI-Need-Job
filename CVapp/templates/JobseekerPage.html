@@ -1,32 +1,5 @@
-{% extends 'base.html'%}
-{% block content %}
-<form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
+<form method="post" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="mb-3">
-        <label for="id_file" class="form-label">Selecciona el archivo de tu cv actual</label>
-        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt">
-        {% if form.file.errors %}
-            <ul class="errorlist" style="padding-left: 0; margin-left: 0;">
-                {% for error in form.file.errors %}
-                    <li style="
-                    list-style-type: none;
-                    margin-left: 0; 
-                    padding-left: 0;
-                    color: red;
-                    font-weight: bold;
-                    background-color: #f8d7da;
-                    border: 1px solid #f5c6cb;
-                    padding: 10px;
-                    border-radius: 5px;
-                    margin-bottom: 10px;"
-                    >{{ error }}</li>
-                {% endfor %}
-            </ul>
-        {% endif %}
-    </div>
-    <div class="d-grid">
-        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Subir archivo</button>
-    </div>
+    {{ form.as_p }}
+    <button type="submit">Subir archivo</button>
 </form>
-
-{% endblock content %}
