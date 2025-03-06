@@ -1,41 +1,34 @@
 from django.shortcuts import render, redirect
 from .forms import UploadFileForm
-import PyPDF2 # type: ignore
-import os
+from PyPDF2 import PdfReader
 
 def home(request):
     return render(request, 'home.html')
 
-def extract_text_from_pdf(pdf_path):
-    with open(pdf_path, 'rb') as file:
-        reader = PyPDF2.PdfReader(file)
+def extract_text_from_pdf(file):
+    pdf_reader = PdfReader(file)
+    text = ''
+    for page_num in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_num]
+        text += page.extract_text()
 
-        extracted_text = ""
-        
-        for page_num in range(len(reader.pages)):
-            page = reader.pages[page_num]
-            extracted_text += page.extract_text()
-        
-        return extracted_text
+    return text
 
-def extract_text(md_path):
-    with open(md_path, 'r', encoding='utf-8') as file:
-        text = file.read()
+def extract_text(file):
+    text = file.read().decode('utf-8')
     return text
 
 def uploadCV(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid():
-            uploaded_file = form.save()
-            file_name = uploaded_file.file.name  
-            file_extension = os.path.splitext(file_name)[1]
-            file_path = uploaded_file.file.path 
-            if file_extension == ".pdf":
-                print(extract_text_from_pdf(file_path))
+            uploaded_file = request.FILES['file']
+            file_extension = uploaded_file.name.split('.')[-1].lower()
+            if file_extension == "pdf":
+                print(extract_text_from_pdf(uploaded_file))
                 # process with AI
             else:
-                print(extract_text(file_path))
+                print(extract_text(uploaded_file))
                 # process with AI
             return redirect('upload_cv')  
     else:

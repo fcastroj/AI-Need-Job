@@ -1,21 +1,18 @@
 from django import forms
-from .models import CV
-from django.core.exceptions import ValidationError
-import os 
 
-class UploadFileForm(forms.ModelForm):
-    class Meta:
-        model = CV
-        fields = ['file']
+class UploadFileForm(forms.Form):
+    file = forms.FileField(
+        label='Sube un archivo',
+        help_text='Solo archivos .pdf, .txt o .md'
+    )
 
     def clean_file(self):
         file = self.cleaned_data.get('file')
+        allowed_extensions = ['pdf', 'txt', 'md']
+        extension = file.name.split('.')[-1].lower()
 
-        ext = os.path.splitext(file.name)[1].lower()
-
-        valid_extensions = ['.pdf', '.md', '.txt']
-
-        if ext not in valid_extensions:
-            raise ValidationError(f"Solo se permiten archivos con extensiones: {', '.join(valid_extensions)}")
+        # Validar que la extensión esté permitida
+        if extension not in allowed_extensions:
+            raise forms.ValidationError('Solo se permiten archivos .pdf, .txt o .md.')
 
         return file
