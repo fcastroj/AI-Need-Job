@@ -1,5 +1,16 @@
-<form method="post" enctype="multipart/form-data">
+{% extends 'base.html'%}
+{% block content %}
+<form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
     {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Subir archivo</button>
+    
+    <div class="mb-3">
+        <label for="id_file" class="form-label">Selecciona el archivo de tu cv actual</label>
+        <input type="file" name="file" class="form-control" id="id_file">
+    </div>
+
+    <div class="d-grid">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Subir archivo</button>
+    </div>
 </form>
+
+{% endblock content %}
