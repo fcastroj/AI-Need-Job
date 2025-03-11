@@ -1,0 +1,15 @@
+{% block content %}
+<div class="container">
+    {% for offer in offers %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="card-body">
+                <h5 class="card-title">{{ offer.title }}</h5>
+                <p class="card-text">{{ offer.description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock content %}

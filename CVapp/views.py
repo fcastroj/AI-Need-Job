@@ -3,14 +3,11 @@ from django.shortcuts import render, redirect
 from .forms import UploadFileForm
 from PyPDF2 import PdfReader
 from docx import Document
-from PyPDF2 import PdfReader
 from io import BytesIO
 from reportlab.lib.units import inch
 from reportlab.pdfgen import canvas
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-
-
 
 def home(request):
     return render(request, 'home.html')
