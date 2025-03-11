@@ -3,7 +3,7 @@ from .forms import UploadFileForm
 from PyPDF2 import PdfReader
 
 def home(request):
-    return render(request, 'home.html')
+    return render(request, 'prueba.html')
 
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
