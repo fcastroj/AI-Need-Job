@@ -13,7 +13,7 @@ from reportlab.lib.pagesizes import letter
 
 
 def home(request):
-    return render(request, 'prueba.html')
+    return render(request, 'home.html')
 
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
