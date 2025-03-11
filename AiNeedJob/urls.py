@@ -9,7 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', cvapp_views.home, name='home'),
     path('upload_cv/', cvapp_views.uploadCV, name='upload_cv'),
-    path('offer/', include('offer.urls')),
+    path('offer/', include('offer.urls'), name='offer'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
