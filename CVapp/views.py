@@ -9,8 +9,6 @@ from reportlab.pdfgen import canvas # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.pagesizes import letter # type: ignore
 
-
-
 def home(request):
     return render(request, 'home.html')
 

@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container">
+    {% for offer in offers %}
+    <div class="card mb-3">
+        <div class="row g-0">
+            <div class="card-body">
+                <h5 class="card-title">{{ offer.title }}</h5>
+                <p class="card-text">{{ offer.description }}</p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Sección para añadir una nueva oferta de trabajo -->
+    <div class="mt-5 p-4 border rounded bg-light">
+        <h4 class="mb-3">Añadir oferta de trabajo</h4>
+        <form method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="title" class="form-label">Cargo</label>
+                <input type="text" name="title" class="form-control" id="title" required>
+            </div>
+            <div class="mb-3">
+                <label for="description" class="form-label">Descripción</label>
+                <textarea name="description" class="form-control" id="description" rows="4" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="salary" class="form-label">Sueldo</label>
+                <input type="text" name="salary" class="form-control" id="salary" required>
+            </div>
+            <div class="mb-3">
+                <label for="company" class="form-label">Compañía</label>
+                <input type="text" name="company" class="form-control" id="company" required>
+            </div>
+            <div class="d-grid">
+                <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Publicar oferta</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock content %}
