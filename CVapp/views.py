@@ -42,6 +42,10 @@ def uploadCV(request):
         form = UploadFileForm()
     return render(request, 'JobseekerPage.html', {'form': form})
 
+#EXAMPLE TEXT
+text = "EXAMPLE OF OUTPUT SELECTION AND DOWNLOAD. " \
+"AI-Need-Job"
+
 def generate_docx_response(text):
     """Genera una respuesta en formato DOCX."""
     doc = Document()
