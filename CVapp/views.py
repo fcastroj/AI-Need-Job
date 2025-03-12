@@ -1,16 +1,13 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from .forms import UploadFileForm
-from PyPDF2 import PdfReader
-from docx import Document
-from PyPDF2 import PdfReader
-from io import BytesIO
-from reportlab.lib.units import inch
-from reportlab.pdfgen import canvas
-from reportlab.lib import colors
-from reportlab.lib.pagesizes import letter
-
-
+from PyPDF2 import PdfReader # type: ignore
+from docx import Document # type: ignore
+from io import BytesIO # type: ignore
+from reportlab.lib.units import inch # type: ignore
+from reportlab.pdfgen import canvas # type: ignore
+from reportlab.lib import colors # type: ignore
+from reportlab.lib.pagesizes import letter # type: ignore
 
 def home(request):
     return render(request, 'home.html')

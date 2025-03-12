@@ -1,4 +1,44 @@
 {% extends 'base.html'%}
 {% block content %}
-<h1>AI Need Job</h1>
+<header class="rounded-5 text-white text-center py-5" style="background-color:#009f85;">
+    <div class="container">
+        <h1>Welcome to AI-Need-Job</h1>
+        <h3>Your solution for personalized job applications and offers</h3>
+        <a href="{% url 'upload_cv' %}" class="btn btn-light btn-lg mt-3" style="color: #009f85;">Get Started</a>
+    </div>
+</header>
+
+
+<section class="py-5 text-center">
+    <div class="container">
+        <h2>Our Features</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Upload CV</h5>
+                        <p class="card-text">Easily upload your CV and personalize it with our AI.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Job Offers</h5>
+                        <p class="card-text">Find and post job offers tailored to your skills.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">AI Matching</h5>
+                        <p class="card-text">Use AI to match your CV with the best job offers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
 {% endblock content %}
