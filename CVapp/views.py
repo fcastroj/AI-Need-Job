@@ -1,6 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
-from .forms import UploadFileForm
+from django.contrib import messages
+from .forms import UploadFileForm, SelectOutputFormat
 from PyPDF2 import PdfReader # type: ignore
 from docx import Document # type: ignore
 from io import BytesIO # type: ignore
@@ -28,16 +29,30 @@ def extract_text(file):
 def uploadCV(request):
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid():
+        if form.is_valid() and request.FILES:
             uploaded_file = request.FILES['file']
             file_extension = uploaded_file.name.split('.')[-1].lower()
-            if file_extension == "pdf":
-                print(extract_text_from_pdf(uploaded_file))
+            if request.POST['vacancy'] != "": # vacancy specifications
+                vacancy = request.POST['vacancy']
+                if file_extension == "pdf":
+                    print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
+                    print("vacancy_specifications:" + vacancy)
+                    redirect()
+                    # process with AI
+                else:
+                    print("cv_text: \n" + extract_text(uploaded_file))
+                    print("vacancy_specifications:" + vacancy)
+                    # process with AI
+            # return redirect('upload_cv')  
+        elif request.POST['cvText']:
+            cv_text = request.POST['cvText']
+            if request.POST['vacancy'] != "": # vacancy specifications
+                vacancy = request.POST['vacancy']
+                print("cv_text: \n" + cv_text)
+                print("vacancy_specifications: \n" + vacancy)
                 # process with AI
-            else:
-                print(extract_text(uploaded_file))
-                # process with AI
-            return redirect('upload_cv')  
+        else:
+            messages.warning(request,"No hay un cv inicial")
     else:
         form = UploadFileForm()
     return render(request, 'JobseekerPage.html', {'form': form})
@@ -119,3 +134,19 @@ def generate_pdf_response(text):
     response = HttpResponse(buffer, content_type='application/pdf')
     response['Content-Disposition'] = 'attachment; filename=mejorado_cv.pdf'
     return response
+
+
+def download_cv_generated(request):
+    if request.method == 'POST':
+        form = SelectOutputFormat(request.POST)
+        if form.is_valid():
+            outputFormat = request.POST['outputFormat']
+            if outputFormat == "pdf":
+                return generate_pdf_response("Hola PDF")
+            if outputFormat == "docx":
+                return generate_docx_response("Hola Docx")  
+            else:
+                messages.warning(request,"no hay generador de texto")
+        else:
+            form = SelectOutputFormat()
+    return render(request, 'jobseekerPage.html')

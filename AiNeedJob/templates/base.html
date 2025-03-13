@@ -20,12 +20,24 @@
                         <a class="nav-link active" aria-current="page" href="{% url 'upload_cv' %}">Jobseekers</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{% url 'offer' %}">Companies</a>
+                        <a class="nav-link active" href="{% url 'offer' %}">Companies</a>
                     </li>
                 </ul>
             </div>
         </div>
     </nav>
+
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+            {% if forloop.last %}
+                <div class="alert alert-danger" >
+                    {{ message }}
+                </div>
+            {% endif %}
+        {% endfor %}
+    </div>
+    {% endif %}
 
 
     <!-- Content Container -->
