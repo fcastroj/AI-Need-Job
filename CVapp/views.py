@@ -1,7 +1,7 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UploadFileForm
+from .forms import UploadFileForm, SelectOutputFormat
 from PyPDF2 import PdfReader # type: ignore
 from docx import Document # type: ignore
 from io import BytesIO # type: ignore
@@ -37,6 +37,7 @@ def uploadCV(request):
                 if file_extension == "pdf":
                     print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
                     print("vacancy_specifications:" + vacancy)
+                    redirect()
                     # process with AI
                 else:
                     print("cv_text: \n" + extract_text(uploaded_file))
@@ -135,5 +136,17 @@ def generate_pdf_response(text):
     return response
 
 
-def process(request):
+def download_cv_generated(request):
+    if request.method == 'POST':
+        form = SelectOutputFormat(request.POST)
+        if form.is_valid():
+            outputFormat = request.POST['outputFormat']
+            if outputFormat == "pdf":
+                return generate_pdf_response("Hola PDF")
+            if outputFormat == "docx":
+                return generate_docx_response("Hola Docx")  
+            else:
+                messages.warning(request,"no hay generador de texto")
+        else:
+            form = SelectOutputFormat()
     return render(request, 'jobseekerPage.html')

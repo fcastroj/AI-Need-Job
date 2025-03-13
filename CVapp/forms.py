@@ -9,3 +9,5 @@ class UploadFileForm(forms.Form):
     vacancy = forms.Textarea()
     cv_text = forms.Textarea()
 
+class SelectOutputFormat(forms.Form):
+    outputFormat = forms.Select()
