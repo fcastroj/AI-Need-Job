@@ -9,8 +9,6 @@ from reportlab.pdfgen import canvas # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.pagesizes import letter # type: ignore
 
-
-
 def home(request):
     return render(request, 'home.html')
 
@@ -43,6 +41,10 @@ def uploadCV(request):
     else:
         form = UploadFileForm()
     return render(request, 'JobseekerPage.html', {'form': form})
+
+#EXAMPLE TEXT
+text = "EXAMPLE OF OUTPUT SELECTION AND DOWNLOAD. " \
+"AI-Need-Job"
 
 def generate_docx_response(text):
     """Genera una respuesta en formato DOCX."""

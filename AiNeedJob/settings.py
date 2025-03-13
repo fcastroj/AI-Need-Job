@@ -43,7 +43,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'CVapp',
-]
+    'offer',
+    ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
