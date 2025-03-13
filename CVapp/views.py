@@ -135,6 +135,15 @@ def generate_pdf_response(text):
     response['Content-Disposition'] = 'attachment; filename=mejorado_cv.pdf'
     return response
 
+def generate_txt_response(text):
+    """Generates a response to download a .txt file."""
+    buffer = BytesIO()
+    buffer.write(text.encode('utf-8'))  # Encode text to bytes
+    buffer.seek(0)  # Reset the buffer position
+
+    response = HttpResponse(buffer, content_type='text/plain')
+    response['Content-Disposition'] = 'attachment; filename=mejorado_cv.txt'
+    return response
 
 def download_cv_generated(request):
     if request.method == 'POST':
@@ -145,8 +154,8 @@ def download_cv_generated(request):
                 return generate_pdf_response("Hola PDF")
             if outputFormat == "docx":
                 return generate_docx_response("Hola Docx")  
-            else:
-                messages.warning(request,"no hay generador de texto")
+            if outputFormat == "txt":
+                return generate_txt_response("Hola Txt")
         else:
             form = SelectOutputFormat()
     return render(request, 'jobseekerPage.html')
