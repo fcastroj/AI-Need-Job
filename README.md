@@ -1,5 +1,6 @@
 # AI-Need-Job
 
+
 ## Project Description
 This project aims to enhance the job recruitment process by generating optimized CVs for candidates applying to specific job vacancies. The system leverages AI to refine and customize CVs based on job requirements, improving candidate-employer matching efficiency.
 
