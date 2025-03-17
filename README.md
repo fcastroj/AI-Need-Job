@@ -27,15 +27,6 @@ python manage.py runserver
 ```
 Now visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
 
-## 🔧 Useful Commands
-| Command | Description |
-|---------|-------------|
-| `python manage.py runserver` | Start the development server |
-| `python manage.py migrate` | Apply database migrations |
-| `python manage.py createsuperuser` | Create an admin user |
-| `python manage.py shell` | Open Django shell |
-| `python manage.py collectstatic` | Collect static files |
-
 
 ## Contributing
 Pull requests are welcome! For major changes, please open an issue first.
