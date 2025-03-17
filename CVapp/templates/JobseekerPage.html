@@ -1,44 +1,12 @@
 {% extends 'base.html'%}
 {% block content %}
-<form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
-<form method="post" enctype="multipart/form-data">
+
+<form method="post" enctype="multipart/form-data" action="{% url 'upload_cv' %}">
     {% csrf_token %}
     <div class="mb-3">
         <label for="id_file" class="form-label">Selecciona el archivo de tu cv actual</label>
         <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt">
-        {% if form.file.errors %}
-            <ul class="errorlist" style="padding-left: 0; margin-left: 0;">
-                {% for error in form.file.errors %}
-                    <div class="alert alert-danger" role="alert" style="list-style-type: none;">
-                        <div>
-                            {{ error }}
-                        </div>
-                    </div>
-                {% endfor %}
-            </ul>
-        {% endif %}
     </div>
-    <div class="d-grid">
-        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Subir archivo</button>
-    </div>
-</form>
-
-<form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
-    <!-- Selector de formato de salida -->
-    <div class="mt-3">
-        <label for="outputFormat" class="form-label">Formato de salida:</label>
-        <select name="outputFormat" id="outputFormat" class="form-select">
-            <option value="text">Texto</option>
-            <option value="docx">DOCX</option>
-            <option value="pdf">PDF</option>
-        </select>
-    </div>
-    <div class="d-grid">
-        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Descargar Archivo</button>
-    </div>
-</form>
-
-<form method="post" enctype="multipart/form-data" class="p-4 border rounded bg-light">
     <div class="row mt-4">
         <div class="col-md-6 custom-box">
             <label for="cvText" class="form-label">Ingresa tu cv en forma de texto</label>
@@ -47,8 +15,27 @@
 
         <div class="col-md-6 custom-box">
             <label for="vacancy" class="form-label">Ingresa vacante y especificaciones</label>
-            <textarea name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
+            <textarea required=True name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
         </div>
     </div>
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Mejorar CV</button>
+    </div>
 </form>
+
+<form method="post" enctype="multipart/form-data" action="{% url 'process_cv' %}" class="p-4 border rounded bg-light mt-3">
+    {% csrf_token %}
+    <div class="mt-2">
+        <label for="outputFormat" class="form-label">Formato de salida:</label>
+        <select name="outputFormat" id="outputFormat" class="form-select">
+            <option value="txt">TXT</option>
+            <option value="docx">DOCX</option>
+            <option value="pdf">PDF</option>
+        </select>
+    </div>
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Descargar Archivo</button>
+    </div>
+</form>
+
 {% endblock content %}
