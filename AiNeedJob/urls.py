@@ -11,6 +11,7 @@ urlpatterns = [
     path('upload_cv/', cvapp_views.uploadCV, name='upload_cv'),
     path('process_cv/', cvapp_views.download_cv_generated, name='process_cv'),
     path('offer/', include('offer.urls'), name='offer'),
+    path('user/', include('users.urls'), name='user'),
 ]
 
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

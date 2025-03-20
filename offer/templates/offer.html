@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
+<!--
 <div class="container">
     {% for offer in offers %}
     <div class="card mb-3">
@@ -10,9 +11,11 @@
             </div>
         </div>
     </div>
-    {% endfor %}
+    {% endfor %} 
+-->
 
     <!-- Sección para añadir una nueva oferta de trabajo -->
+<!-- 
     <div class="mt-5 p-4 border rounded bg-light">
         <h4 class="mb-3">Añadir oferta de trabajo</h4>
         <form method="post" enctype="multipart/form-data">
@@ -39,4 +42,29 @@
         </form>
     </div>
 </div>
+
+-->
+
+
+<form method="post" enctype="multipart/form-data" action="{% url 'upload_cvs' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="id_file" class="form-label">Selecciona los archivos que quiere evaluar</label>
+        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt">
+    </div>
+    <div class="mt-4">
+
+        <div class="md-6 custom-box">
+            <label for="vacancy" class="form-label">Ingresa vacante y especificaciones</label>
+            <textarea required=True name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
+        </div>
+    </div>
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">evaluar cvs</button>
+    </div>
+    <div class="d-grid mt-3">
+        <button class="btn" style="background-color: #009f85; color: #ffff;">Mejorar presentacion de vacante</button>
+    </div>
+</form>
+
 {% endblock content %}

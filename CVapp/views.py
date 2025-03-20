@@ -37,11 +37,10 @@ def uploadCV(request):
                 if file_extension == "pdf":
                     print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
                     print("vacancy_specifications:" + vacancy)
-                    redirect()
                     # process with AI
                 else:
                     print("cv_text: \n" + extract_text(uploaded_file))
-                    print("vacancy_specifications:" + vacancy)
+                    print("\nvacancy_specifications: \n" + vacancy)
                     # process with AI
             # return redirect('upload_cv')  
         elif request.POST['cvText']:
@@ -49,7 +48,7 @@ def uploadCV(request):
             if request.POST['vacancy'] != "": # vacancy specifications
                 vacancy = request.POST['vacancy']
                 print("cv_text: \n" + cv_text)
-                print("vacancy_specifications: \n" + vacancy)
+                print("\nvacancy_specifications: \n" + vacancy)
                 # process with AI
         else:
             messages.warning(request,"No hay un cv inicial")
