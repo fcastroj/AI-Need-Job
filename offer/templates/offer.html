@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% block content %}
 
-
 <form method="post" enctype="multipart/form-data" action="{% url 'upload_cvs' %}">
     {% csrf_token %}
     <div class="mb-3">
@@ -24,3 +23,4 @@
 </form>
 
 {% endblock content %}
+
