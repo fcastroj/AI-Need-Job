@@ -10,6 +10,7 @@ class Resume(models.Model):
     upgraded_cv = models.TextField()
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    embedding = models.TextField(blank=True, null=True)  # Placeholder for the embedding of the resume
     image = models.ImageField(upload_to='images/resumes/', blank=True, null=True)
 
     def __str__(self):

@@ -8,9 +8,6 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', cvapp_views.home, name='home'),
-    path('upload_cv/', cvapp_views.uploadCV, name='upload_cv'),
-    path('feed/', cvapp_views.feed, name='feed'),
-    path('process_cv/', cvapp_views.download_cv_generated, name='process_cv'),
     path('offer/', include('offer.urls'), name='offer'),
     path('user/', include('users.urls'), name='user'),
 ]

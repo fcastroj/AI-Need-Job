@@ -5,7 +5,10 @@ from .forms import UploadFileFormOffer, UploadVacancyForm
 from .models import Vacancy
 from PyPDF2 import PdfReader 
 from users.models import User
-# Create your views here.
+import os
+import numpy as np
+from openai import OpenAI # type: ignore
+from dotenv import load_dotenv # type: ignore
 
 
 def extract_text_from_pdf(file):
@@ -50,6 +53,12 @@ def uploadCVS(request):
         form = UploadFileFormOffer()
     return render(request, 'matchingPage.html', {'form': form, 'user': user})
 
+def get_embedding(text, client):
+    response = client.embeddings.create(
+        input=[text],
+        model="text-embedding-3-small"
+    )
+    return np.array(response.data[0].embedding, dtype=np.float32)
 
 def upload_vacancies(request):
     if 'user_id' not in request.session:
@@ -63,13 +72,19 @@ def upload_vacancies(request):
             description = request.POST['description']
             requirements = request.POST['requirements']
 
+            extracted_text = description + " " + requirements
+            load_dotenv('openai_key.env')
+            client = OpenAI(api_key=os.environ.get('openai_api_key'))
+            embedding = get_embedding(extracted_text, client)
 
             vacancy = Vacancy(
                 title=title,
                 description=description,
                 requirements=requirements,
-                uploaded_by=user
+                uploaded_by=user,
+                embedding=embedding.tolist(),  # Convert numpy array to list for storage
             )
+            
             vacancy.save()
             messages.success(request, 'Vacante subida con éxito.')
             return redirect('history')

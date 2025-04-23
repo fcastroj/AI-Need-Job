@@ -12,7 +12,10 @@ from reportlab.lib.pagesizes import letter # type: ignore
 from users.models import User
 from offer.models import Vacancy
 from .models import Resume, Applied_resume, Saved_vacancy
-
+import os
+import numpy as np
+from openai import OpenAI # type: ignore
+from dotenv import load_dotenv # type: ignore
 
 
 def home(request):
@@ -32,6 +35,19 @@ def feed(request):
     else:
         return redirect('login')
     
+def apply_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Resume.objects.get(id=request.POST['resume_id'])
+    vacancy = Vacancy.objects.get(id=vacancy_id)
+    applied_resume = Applied_resume.objects.create(
+        resume=resume,
+        vacancy=vacancy,
+        match_rate=cosine_similarity(resume.embedding, vacancy.embedding),  # Placeholder for the match rate
+    )
+
+
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
     text = ''
@@ -45,7 +61,16 @@ def extract_text(file):
     text = file.read().decode('utf-8')
     return text
 
+def get_embedding(text, client):
+    response = client.embeddings.create(
+        input=[text],
+        model="text-embedding-3-small"
+    )
+    return np.array(response.data[0].embedding, dtype=np.float32)
 
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+    
 def uploadCV(request):
     if 'user_id' not in request.session:
         return redirect('login')
@@ -72,6 +97,10 @@ def uploadCV(request):
             else:
                 messages.warning(request, "No hay un CV inicial") 
                 return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
+            
+            load_dotenv('openai_key.env')
+            client = OpenAI(api_key=os.environ.get('openai_api_key'))
+            embedding = get_embedding(extracted_text, client)
 
             resume = Resume.objects.create(
                 version="1.0",
@@ -80,7 +109,8 @@ def uploadCV(request):
                 image=image,
                 extracted_text=extracted_text,
                 upgraded_cv="",
-                uploaded_by=user
+                uploaded_by=user,
+                embedding=embedding.tolist() if embedding is not None else None
             )
             resume.save()
             messages.success(request, "CV subido y procesado con éxito")
