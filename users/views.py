@@ -3,7 +3,8 @@ from .forms import SignupForm, LoginForm
 from .models import User
 from django.contrib.auth.hashers import check_password
 from django.contrib import messages
-
+from CVapp.models import Resume, Applied_resume, Saved_vacancy
+from offer.models import Vacancy
 def login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -51,4 +52,31 @@ def logout(request):
     return redirect('login')
 
 def history(request):
-    return render(request, 'historyPage.html')
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    if user.role == 'jobseeker':
+        resumes = Resume.objects.filter(uploaded_by=user)
+        applied_resumes = Applied_resume.objects.filter(resume__uploaded_by=user)
+        saved_vacancies = Saved_vacancy.objects.filter(user=user)
+
+
+        context = {
+            'user': user,
+            'resumes': resumes,
+            'applied_resumes': applied_resumes,
+            'saved_vacancies': saved_vacancies
+        }
+    
+        return render(request, 'historyPage.html' , context)
+    else:
+        vacancies = Vacancy.objects.filter(uploaded_by=user)
+        vacancies_mapping = {}
+        for vacancy in vacancies:
+            resumes = Applied_resume.objects.filter(vacancy=vacancy)
+            vacancies_mapping[vacancy] = resumes
+        context = {
+            'user': user,
+            'vacancies_mapping': vacancies_mapping
+        }
+        return render(request, 'managementPage.html', context)

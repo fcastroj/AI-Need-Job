@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Gestión de Vacantes</h2>
+
+    {% if vacancies_mapping %}
+        {% for vacancy, resumes in vacancies_mapping.items %}
+            <div class="mt-4">
+                <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
+                <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
+                <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
+                <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
+                <p><strong>Fecha de publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
+
+                <div class="table-responsive mt-3">
+                    <table class="table table-bordered">
+                        <thead class="table-light">
+                            <tr>
+                                <th>#</th>
+                                <th>CV</th>
+                                <th>Usuario</th>
+                                <th>Fecha de aplicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for applied in resumes %}
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td>{{ applied.resume.file.name }}</td>
+                                <td>{{ applied.resume.uploaded_by.username }}</td>
+                                <td>{{ applied.date_applied|date:"Y-m-d" }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="4" class="text-center">No hay CVs aplicados a esta vacante.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <hr class="my-4">
+        {% endfor %}
+    {% else %}
+        <p class="text-center">No has publicado ninguna vacante.</p>
+    {% endif %}
+
+    <div class="d-grid mt-4">
+        <a href="{% url 'home' %}" class="btn" style="background-color: #009f85; color: #ffff;">Volver</a>
+    </div>
+</div>
+
+{% endblock content %}
