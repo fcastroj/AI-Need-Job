@@ -17,7 +17,7 @@
     </div>
     {% if user.role == 'jobseeker' %}
     <div class="container text-center">
-        <a href="{% url 'upload_cv' %}" class="btn text-white" style="background-color: #009f85;">Upload CV</a>
+        <a href="{% url 'upload_cv' %}" class="btn text-white" style="background-color: #009f85;">Upgrade CV</a>
         <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View History</a>
     </div>
     {% elif user.role == 'recruiter' %}

@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UploadFileForm, SelectOutputFormat, UploadImageForm
+from .forms import UploadFileForm, SelectOutputFormat
 from PyPDF2 import PdfReader # type: ignore
 from docx import Document # type: ignore
 from io import BytesIO # type: ignore
@@ -10,7 +10,9 @@ from reportlab.pdfgen import canvas # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.pagesizes import letter # type: ignore
 from users.models import User
-from django.core.files.storage import FileSystemStorage
+from offer.models import Vacancy
+from .models import Resume, Applied_resume, Saved_vacancy
+
 
 
 def home(request):
@@ -34,55 +36,51 @@ def extract_text(file):
     text = file.read().decode('utf-8')
     return text
 
-def upload_image(request):
-    if request.method == 'POST':
-        form = UploadImageForm(request.POST, request.FILES)
-        if form.is_valid():
-            image = request.FILES['image']
-            fs = FileSystemStorage()
-            filename = fs.save(image.name, image)
-            uploaded_image_url = fs.url(filename)
-            return render(request, 'JobseekerPage.html', {
-                'uploaded_image_url': uploaded_image_url,
-                'image_success': True
-            })
-    else:
-        form = UploadImageForm()
-    return render(request, 'JobseekerPage.html', {'image_form': form})
 
 def uploadCV(request):
-    if 'user_id' in request.session:
-        user_id = request.session['user_id']
-        user = User.objects.get(id=user_id)
-    else:
+    if 'user_id' not in request.session:
         return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
-        if form.is_valid() and request.FILES:
-            uploaded_file = request.FILES['file']
-            file_extension = uploaded_file.name.split('.')[-1].lower()
-            if request.POST['vacancy'] != "": # vacancy specifications
-                vacancy = request.POST['vacancy']
-                if file_extension == "pdf":
-                    print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
-                    print("vacancy_specifications:" + vacancy)
-                    # process with AI
+        if form.is_valid():
+            file = request.FILES.get('file')
+            image = request.FILES.get('image')
+            vacancy = form.cleaned_data['vacancy']
+            cv_text = form.cleaned_data['cv_text']
+
+            extracted_text = ""
+            if file:
+                extension = file.name.split('.')[-1].lower()
+                if extension == 'pdf':
+                    extracted_text = extract_text_from_pdf(file)
                 else:
-                    print("cv_text: \n" + extract_text(uploaded_file))
-                    print("\nvacancy_specifications: \n" + vacancy)
-                    # process with AI
-            # return redirect('upload_cv')  
-        elif request.POST['cvText']:
-            cv_text = request.POST['cvText']
-            if request.POST['vacancy'] != "": # vacancy specifications
-                vacancy = request.POST['vacancy']
-                print("cv_text: \n" + cv_text)
-                print("\nvacancy_specifications: \n" + vacancy)
-                # process with AI
+                    extracted_text = extract_text(file)
+            elif cv_text != "":
+                extracted_text = cv_text
+            else:
+                messages.warning(request, "No hay un CV inicial") 
+                return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
+
+            resume = Resume.objects.create(
+                version="1.0",
+                name=file.name if file else "Manual Entry",
+                vacancy_text=vacancy,
+                image=image,
+                extracted_text=extracted_text,
+                upgraded_cv="",
+                uploaded_by=user
+            )
+            resume.save()
+            messages.success(request, "CV subido y procesado con éxito")
+            # return redirect('process_cv', resume_id=resume.id)
         else:
-            messages.warning(request,"No hay un cv inicial")
+            messages.error(request, "Formulario no válido")
     else:
         form = UploadFileForm()
+
     return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
 
 

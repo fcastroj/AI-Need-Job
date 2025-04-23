@@ -6,11 +6,11 @@ class Resume(models.Model):
     version = models.CharField(max_length=10)
     name = models.CharField(max_length=100)
     vacancy_text = models.CharField(max_length=1000)
-    image = models.ImageField(upload_to='images/')
     extracted_text = models.TextField()
     upgraded_cv = models.TextField()
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
+    image = models.ImageField(upload_to='images/resumes/', blank=True, null=True)
 
     def __str__(self):
         return self.name
