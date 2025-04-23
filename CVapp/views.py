@@ -59,10 +59,8 @@ def uploadCV(request):
                 else:
                     extracted_text = extract_text(file)
             elif cv_text != "":
-                print(cv_text)
                 extracted_text = cv_text
             else:
-                print(cv_text)
                 messages.warning(request, "No hay un CV inicial") 
                 return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
 
