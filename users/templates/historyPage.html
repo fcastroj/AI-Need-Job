@@ -28,7 +28,7 @@
                 <tr>
                     <th scope="row">{{ forloop.counter|add:resumes.count }}</th>
                     <td>CV Aplicado</td>
-                    <td>{{ applied.date_applied|date:"Y-m-d" }}</td>
+                    <td>{{ applied.applied_at|date:"Y-m-d" }}</td>
                     <td>El CV {{ applied.resume.file.name }} fue aplicado a la vacante "{{ applied.vacancy.title }}".</td>
                 </tr>
                 {% endfor %}

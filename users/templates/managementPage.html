@@ -53,8 +53,8 @@
                             <th scope="row">{{ forloop.counter }}</th>
                             <td>{{ applied.resume.file.name }}</td>
                             <td>{{ applied.resume.uploaded_by.username }}</td>
-                            <td>{{ applied.date_applied|date:"Y-m-d" }}</td>
-                            <td>{{ applied.match_rate|default:"No calculada" }}</td>
+                            <td>{{ applied.applied_at|date:"Y-m-d" }}</td>
+                            <td>{{ applied.match_rate|floatformat:2|default:"No calculada" }}</td>
                             <td>{{ applied.state|default:"En espera" }}</td>
                         </tr>
                         {% empty %}

@@ -33,7 +33,7 @@
             <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
             <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
             <div class="d-grid mt-4">
-                <a href="" class="btn" style="background-color: #009f85; color: #ffff;">Aplicar</a>
+                <a href="{% url 'apply' vacancy.id %}" class="btn" style="background-color: #009f85; color: #ffff;">Aplicar</a>
             </div>
             <div class="d-grid mt-4">
                 <a href="" class="btn" style="background-color: #009f85; color: #ffff;">Guardar</a>
