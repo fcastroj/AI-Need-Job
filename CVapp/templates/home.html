@@ -1,10 +1,12 @@
 {% extends 'base.html'%}
 {% block content %}
-<header class="rounded-5 text-white text-center py-5" style="background-color:#009f85;">
+{% load static %}
+<header class="rounded-5 text-white text-center py-2" style="background-color:#009f85;">
     <div class="container">
+        <img src="{% static 'images/AINEEDJOB_logo_1.png' %}" style="filter: brightness(0) invert(1);" alt="AI-Need-Job" width="450" height="270" >
         <h1>Welcome to AI-Need-Job</h1>
-        <h3>Your solution for personalized job applications and offers</h3>
-        <a href="{% url 'upload_cv' %}" class="btn btn-light btn-lg mt-3" style="color: #009f85;">Get Started</a>
+        <h3>From vacancy to ideal talent. Apply smarter. Apply better</h3>
+        <a href="{% url 'upload_cv' %}" class="btn btn-light btn-lg " style="color: #009f85;">Get Started</a>
     </div>
 </header>
 {% if user.is_authenticated %}
@@ -15,13 +17,13 @@
     </div>
     {% if user.role == 'jobseeker' %}
     <div class="container text-center">
-        <a href="{% url 'upload_cv' %}" class="btn btn-primary " style="background-color: #009f85;">Upload CV</a>
-        <a href="{% url 'history' %}" class="btn btn-secondary" style="background-color: #009f85;">View History</a>
+        <a href="{% url 'upload_cv' %}" class="btn text-white" style="background-color: #009f85;">Upload CV</a>
+        <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View History</a>
     </div>
     {% elif user.role == 'recruiter' %}
     <div class="container text-center">
-        <a href="{% url 'upload_cvs' %}" class="btn btn-primary" style="background-color: #009f85;">Post Job Offers</a>
-        <a href="{% url 'history' %}" class="btn btn-secondary" style="background-color: #009f85;">View Applications</a>
+        <a href="{% url 'upload_cvs' %}" class="btn text-white" style="background-color: #009f85;">Post Job Offers</a>
+        <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View Applications</a>
     </section>
     {% endif %}
 {% else %}
@@ -34,7 +36,7 @@
 </section>
 {% endif %}
 
-<section class="py-5 text-center">
+<section class="py-4 text-center">
     <div class="container">
         <h2>Our Features</h2>
         <div class="row row-cols-1 row-cols-md-3 g-4">
