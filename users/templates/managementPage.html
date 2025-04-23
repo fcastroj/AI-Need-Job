@@ -34,7 +34,6 @@
         <div class="collapse" id="vacancy-{{ vacancy.id }}">
             <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
             <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
-            <p><strong>Fecha de publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
 
             <div class="table-responsive mt-3">
                 <table class="table table-bordered">

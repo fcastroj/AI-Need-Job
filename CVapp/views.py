@@ -23,6 +23,15 @@ def home(request):
     else:
         return redirect('login')
 
+def feed(request):
+    if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        user = User.objects.get(id=user_id)
+        vacancies = Vacancy.objects.filter(state='open').order_by('-uploaded_at')
+        return render(request, 'feed.html', {'user': user, 'vacancies': vacancies})
+    else:
+        return redirect('login')
+    
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
     text = ''
