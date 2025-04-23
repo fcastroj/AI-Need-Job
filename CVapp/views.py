@@ -51,8 +51,10 @@ def uploadCV(request):
                 print("cv_text: \n" + cv_text)
                 print("vacancy_specifications: \n" + vacancy)
                 # process with AI
+            else:
+                messages.warning(request, "Por favor, especifica una vacante.")
         else:
-            messages.warning(request,"No hay un cv inicial")
+            messages.warning(request, "No se cargaron archivos o el formulario no es válido.")
     else:
         form = UploadFileForm()
     return render(request, 'JobseekerPage.html', {'form': form})
