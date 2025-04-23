@@ -4,6 +4,19 @@
 <div class="container mt-5">
     {% load form_tags %}
     <h2 class="text-center mb-4">Crear cuenta</h2>
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+    {% endif %} 
     <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
 

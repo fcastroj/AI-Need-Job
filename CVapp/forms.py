@@ -3,17 +3,24 @@ from django import forms
 class UploadFileForm(forms.Form):
     file = forms.FileField(
         label='Sube un archivo',
-        help_text='Solo archivos .pdf, .txt o .md', 
-        required=False,
+        help_text='Solo archivos .pdf, .txt o .md',
+        required=False
     )
-    vacancy = forms.Textarea()
-    cv_text = forms.Textarea()
-
-class UploadImageForm(forms.Form):
     image = forms.ImageField(
         label='Sube tu foto para el CV',
-        required=True
+        required=False
     )
+    vacancy = forms.CharField(
+        widget=forms.Textarea,
+        required=True,
+        label='Vacante y especificaciones'
+    )
+    cv_text = forms.CharField(
+        widget=forms.Textarea,
+        required=False,
+        label='Texto del CV'
+    )
+
 
 class SelectOutputFormat(forms.Form):
     outputFormat = forms.Select()

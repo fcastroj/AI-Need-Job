@@ -1,6 +1,18 @@
 {% extends 'base.html'%}
 {% block content %}
-
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+    {% endif %}  
 <form method="post" enctype="multipart/form-data" action="{% url 'upload_cv' %}">
     {% csrf_token %}
     <div class="mb-3">
@@ -9,13 +21,17 @@
     </div>
     <div class="row mt-4">
         <div class="col-md-6 custom-box">
-            <label for="cvText" class="form-label">Ingresa tu cv en forma de texto</label>
-            <textarea name="cvText" class="form-control" id="cvText" rows="10" placeholder="Text">{{ cvText }}</textarea>
+            <label for="cv_text" class="form-label">Ingresa tu cv en forma de texto</label>
+            <textarea name="cv_text" class="form-control" id="cv_text" rows="10" placeholder="Text">{{ cv_text }}</textarea>
         </div>
 
         <div class="col-md-6 custom-box">
             <label for="vacancy" class="form-label">Ingresa vacante y especificaciones</label>
             <textarea required=True name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
+        </div>
+        <div class="mb-3">
+            <label for="id_image" class="form-label">Sube imagen para el CV</label>
+            <input type="file" name="image" class="form-control" id="id_image" accept=".jpg, .png">
         </div>
     </div>
     <div class="d-grid mt-3">
@@ -23,14 +39,6 @@
     </div>
 </form>
 
-<form method="post" action="{% url 'upload_image' %}" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div class="mb-3">
-      <label for="id_image" class="form-label">Sube imagen para el CV</label>
-      <input type="file" name="image" class="form-control" id="id_image" accept=".jpg, .png">
-    </div>
-    <button type="submit" class="btn btn-success">Upload Image</button>
-</form>
 {% if image_success %}
     <div class="alert alert-success mt-3">
       Imagen subida correctamente: <a href="{{ uploaded_image_url }}" target="_blank">Ver imagen</a>
