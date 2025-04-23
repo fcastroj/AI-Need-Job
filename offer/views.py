@@ -2,12 +2,12 @@ from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UploadFileFormOffer
-from .models import Offer
+from .models import Vacancy
 from PyPDF2 import PdfReader 
 # Create your views here.
 
 def offer(request):
-    offers = Offer.objects.all()
+    offers = Vacancy.objects.all()
     return render(request, 'offer.html', {'offers': offers})
 
 def extract_text_from_pdf(file):

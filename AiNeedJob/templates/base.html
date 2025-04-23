@@ -35,35 +35,42 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'upload_cv' %}">Jobseekers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'upload_cvs' %}">Companies</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'history' %}">
-                            <img src="{% static  'images/profile_icon.png'%}" alt="Logo" width="30" height="24" class="d-inline-block align-text-top" style=" filter: invert(100%);">
-                        </a>
-                    </li>
+                <ul class="navbar-nav me-auto">  {# Elementos a la izquierda #}
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'jobseeker' %}
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'upload_cv' %}">Upgrade CV</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">Manage your CVs</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'upload_cvs' %}">Post an Offer</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">View Applications</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            
+                <ul class="navbar-nav ms-auto">  {# Elementos a la derecha #}
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'logout' %}">Logout</a>
+                        </li>    
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'history' %}">
+                                <img src="{% static 'images/profile_icon.png' %}" alt="Profile" width="30" height="24" class="d-inline-block align-text-top" style="filter: invert(100%);">
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-            {% if forloop.last %}
-                <div class="alert alert-danger" >
-                    {{ message }}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    {% endif %}
 
 
     <!-- Content Container -->
