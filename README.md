@@ -9,11 +9,11 @@ This project aims to enhance the job recruitment process by generating optimized
 Make sure you have installed:
 - [Python](https://www.python.org/) (Recommended version: 3.8+)
 - [pip](https://pip.pypa.io/en/stable/)
-
+- [git](https://git-scm.com/downloads)
 ### 1. Clone the Repository
 ```sh
-git clone https://github.com/your-username/your-repo-name.git
-cd your-repo-name
+git clone https://github.com/fcastroj/AI-Need-Job.git
+cd AI-Need-Job
 ```
 
 ### 2. Install Dependencies
@@ -26,15 +26,6 @@ pip install -r requirements.txt
 python manage.py runserver
 ```
 Now visit [http://127.0.0.1:8000/](http://127.0.0.1:8000/) in your browser.
-
-## 🔧 Useful Commands
-| Command | Description |
-|---------|-------------|
-| `python manage.py runserver` | Start the development server |
-| `python manage.py migrate` | Apply database migrations |
-| `python manage.py createsuperuser` | Create an admin user |
-| `python manage.py shell` | Open Django shell |
-| `python manage.py collectstatic` | Collect static files |
 
 
 ## Contributing

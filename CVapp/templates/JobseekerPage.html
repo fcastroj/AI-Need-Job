@@ -23,6 +23,20 @@
     </div>
 </form>
 
+<form method="post" action="{% url 'upload_image' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_image" class="form-label">Sube imagen para el CV</label>
+      <input type="file" name="image" class="form-control" id="id_image" accept=".jpg, .png">
+    </div>
+    <button type="submit" class="btn btn-success">Upload Image</button>
+</form>
+{% if image_success %}
+    <div class="alert alert-success mt-3">
+      Imagen subida correctamente: <a href="{{ uploaded_image_url }}" target="_blank">Ver imagen</a>
+    </div>
+{% endif %}
+
 <form method="post" enctype="multipart/form-data" action="{% url 'process_cv' %}" class="p-4 border rounded bg-light mt-3">
     {% csrf_token %}
     <div class="mt-2">

@@ -4,7 +4,27 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AI-Need-Job</title>
+    {% load static %}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        html, body {
+            height: 100%; /* Asegura que ocupen toda la altura de la pantalla */
+            margin: 0;
+        }
+        body {
+            display: flex;
+            flex-direction: column;
+        }
+        .container {
+            flex: 1; /* Hace que el contenido principal ocupe el espacio disponible */
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1rem;
+        }
+    </style>
 </head>
 <body>
     <!-- Navbar -->
@@ -15,29 +35,42 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav ms-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="{% url 'upload_cv' %}">Jobseekers</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="{% url 'upload_cvs' %}">Companies</a>
-                    </li>
+                <ul class="navbar-nav me-auto">  {# Elementos a la izquierda #}
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'jobseeker' %}
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'upload_cv' %}">Upgrade CV</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">Manage your CVs</a>
+                            </li>
+                        {% else %}
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'upload_cvs' %}">Post an Offer</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="#">View Applications</a>
+                            </li>
+                        {% endif %}
+                    {% endif %}
+                </ul>
+            
+                <ul class="navbar-nav ms-auto">  {# Elementos a la derecha #}
+                    {% if user.is_authenticated %}
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'logout' %}">Logout</a>
+                        </li>    
+                        <li class="nav-item">
+                            <a class="nav-link active" href="{% url 'history' %}">
+                                <img src="{% static 'images/profile_icon.png' %}" alt="Profile" width="30" height="24" class="d-inline-block align-text-top" style="filter: invert(100%);">
+                            </a>
+                        </li>
+                    {% endif %}
                 </ul>
             </div>
         </div>
     </nav>
 
-    {% if messages %}
-    <div>
-        {% for message in messages %}
-            {% if forloop.last %}
-                <div class="alert alert-danger" >
-                    {{ message }}
-                </div>
-            {% endif %}
-        {% endfor %}
-    </div>
-    {% endif %}
 
 
     <!-- Content Container -->

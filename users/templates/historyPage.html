@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="container mt-5">
+    <h2 class="text-center mb-4">Historial</h2>
+
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-light">
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Acción</th>
+                    <th scope="col">Fecha</th>
+                    <th scope="col">Descripción</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Simulando algunos elementos de historial -->
+                <tr>
+                    <th scope="row">1</th>
+                    <td>CV Subido</td>
+                    <td>2025-02-11</td>
+                    <td>Se subió el archivo CV_JuanPerez.pdf para evaluación.</td>
+                </tr>
+                <tr>
+                    <th scope="row">2</th>
+                    <td>Vacante Mejorada</td>
+                    <td>2025-02-14</td>
+                    <td>Se Mejoró la vacante "Desarrollador Full Stack" con requisitos para Node.js y React.</td>
+                </tr>
+                <tr>
+                    <th scope="row">3</th>
+                    <td>Evaluación Completa</td>
+                    <td>2025-02-16</td>
+                    <td>Se evaluó el CV_JuanPerez.pdf y se encontró un 85% de compatibilidad con la vacante publicada.</td>
+                </tr>
+                <tr>
+                    <th scope="row">4</th>
+                    <td>CV Mejorado</td>
+                    <td>2025-02-20</td>
+                    <td>Se generó una versión mejorada del CV con recomendaciones personalizadas para la vacante "Desarrollador Full Stack".</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="d-grid mt-3">
+        <a href="#" class="btn" style="background-color: #009f85; color: #ffff;">Volver</a>
+    </div>
+</div>
+
+{% endblock content %}

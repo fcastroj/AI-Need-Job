@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Offer
+from .models import Vacancy
 # Register your models here.
 
-admin.site.register(Offer)
+admin.site.register(Vacancy)

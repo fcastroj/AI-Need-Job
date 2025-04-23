@@ -7,3 +7,4 @@ class UploadFileFormOffer(forms.Form):
         required=False,
     )
     vacancy = forms.Textarea()
+    cv_text = forms.Textarea()
