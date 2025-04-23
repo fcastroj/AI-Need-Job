@@ -1,0 +1,71 @@
+{% extends 'base.html'%}
+{% block content %}
+{% load static %}
+<header class="rounded-5 text-white text-center py-2" style="background-color:#009f85;">
+    <div class="container">
+        <img src="{% static 'images/AINEEDJOB_logo_1.png' %}" style="filter: brightness(0) invert(1);" alt="AI-Need-Job" width="450" height="270" >
+        <h1>Welcome to AI-Need-Job</h1>
+        <h3>From vacancy to ideal talent. Apply smarter. Apply better</h3>
+        <a href="{% url 'upload_cv' %}" class="btn btn-light btn-lg " style="color: #009f85;">Get Started</a>
+    </div>
+</header>
+{% if user.is_authenticated %}
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <h2>Welcome back, {{ user.username }}!</h2>
+        <p>Explore new job opportunities and enhance your profile.</p>
+    </div>
+    {% if user.role == 'jobseeker' %}
+    <div class="container text-center">
+        <a href="{% url 'upload_cv' %}" class="btn text-white" style="background-color: #009f85;">Upload CV</a>
+        <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View History</a>
+    </div>
+    {% elif user.role == 'recruiter' %}
+    <div class="container text-center">
+        <a href="{% url 'upload_cvs' %}" class="btn text-white" style="background-color: #009f85;">Post Job Offers</a>
+        <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View Applications</a>
+    </section>
+    {% endif %}
+{% else %}
+<section class="py-5 text-center bg-light">
+    <div class="container">
+        <h2>Join Us Today!</h2>
+        <p>Create an account to start your journey with AI-Need-Job.</p>
+        <a href="{% url 'signup' %}" class="btn btn-primary">Sign Up</a>
+    </div>
+</section>
+{% endif %}
+
+<section class="py-4 text-center">
+    <div class="container">
+        <h2>Our Features</h2>
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Upload CV</h5>
+                        <p class="card-text">Easily upload your CV and personalize it with our AI.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Job Offers</h5>
+                        <p class="card-text">Find and post job offers tailored to your skills.</p>
+                    </div>
+                </div>
+            </div>
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">AI Matching</h5>
+                        <p class="card-text">Use AI to match your CV with the best job offers.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

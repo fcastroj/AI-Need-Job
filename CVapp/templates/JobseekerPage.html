@@ -1,0 +1,55 @@
+{% extends 'base.html'%}
+{% block content %}
+
+<form method="post" enctype="multipart/form-data" action="{% url 'upload_cv' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="id_file" class="form-label">Selecciona el archivo de tu cv actual</label>
+        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt">
+    </div>
+    <div class="row mt-4">
+        <div class="col-md-6 custom-box">
+            <label for="cvText" class="form-label">Ingresa tu cv en forma de texto</label>
+            <textarea name="cvText" class="form-control" id="cvText" rows="10" placeholder="Text">{{ cvText }}</textarea>
+        </div>
+
+        <div class="col-md-6 custom-box">
+            <label for="vacancy" class="form-label">Ingresa vacante y especificaciones</label>
+            <textarea required=True name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
+        </div>
+    </div>
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Mejorar CV</button>
+    </div>
+</form>
+
+<form method="post" action="{% url 'upload_image' %}" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="id_image" class="form-label">Sube imagen para el CV</label>
+      <input type="file" name="image" class="form-control" id="id_image" accept=".jpg, .png">
+    </div>
+    <button type="submit" class="btn btn-success">Upload Image</button>
+</form>
+{% if image_success %}
+    <div class="alert alert-success mt-3">
+      Imagen subida correctamente: <a href="{{ uploaded_image_url }}" target="_blank">Ver imagen</a>
+    </div>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" action="{% url 'process_cv' %}" class="p-4 border rounded bg-light mt-3">
+    {% csrf_token %}
+    <div class="mt-2">
+        <label for="outputFormat" class="form-label">Formato de salida:</label>
+        <select name="outputFormat" id="outputFormat" class="form-select">
+            <option value="txt">TXT</option>
+            <option value="docx">DOCX</option>
+            <option value="pdf">PDF</option>
+        </select>
+    </div>
+    <div class="d-grid mt-3">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Descargar Archivo</button>
+    </div>
+</form>
+
+{% endblock content %}
