@@ -2,25 +2,54 @@
 {% block content %}
 
 <div class="container mt-5">
-    <h2 class="text-center mb-4">Regístrate</h2>
-    <form method="post" action="{% url 'signup' %}">
+    {% load form_tags %}
+    <h2 class="text-center mb-4">Crear cuenta</h2>
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
+
         <div class="mb-3">
-            <label for="username" class="form-label">Usuario</label>
-            <input type="text" name="username" class="form-control" id="username" required>
+            <label class="form-label">Nombre de usuario</label>
+            {{ form.username|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            {{ form.first_name|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Apellido</label>
+            {{ form.last_name|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Correo electrónico</label>
+            {{ form.email|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            {{ form.password|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Imagen de perfil (opcional)</label>
+            {{ form.profile_image|add_class:"form-control" }}
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">LinkedIn ID (opcional)</label>
+            {{ form.linkedin_id|add_class:"form-control" }}
         </div>
         <div class="mb-3">
-            <label for="email" class="form-label">Correo electrónico</label>
-            <input type="email" name="email" class="form-control" id="email" required>
+            <label class="form-label">Rol</label>
+            {{ form.role|add_class:"form-select" }}
         </div>
-        <div class="mb-3">
-            <label for="password1" class="form-label">Contraseña</label>
-            <input type="password" name="password1" class="form-control" id="password1" required>
-        </div>
-        <div class="mb-3">
-            <label for="password2" class="form-label">Confirmar contraseña</label>
-            <input type="password" name="password2" class="form-control" id="password2" required>
-        </div>
+        {% if messages %}
+            {% for message in messages %}
+                <p class="alert alert-danger mt-3">{{ message }}</p>
+            {% endfor %}
+        {% endif %}
         <div class="d-grid mt-3">
             <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Regístrate</button>
         </div>

@@ -1,4 +1,4 @@
-from django.http import JsonResponse, HttpResponse
+from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UploadFileForm, SelectOutputFormat, UploadImageForm
@@ -9,11 +9,17 @@ from reportlab.lib.units import inch # type: ignore
 from reportlab.pdfgen import canvas # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.pagesizes import letter # type: ignore
+from users.models import User
 from django.core.files.storage import FileSystemStorage
 
 
 def home(request):
-    return render(request, 'home.html')
+    if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        user = User.objects.get(id=user_id)
+        return render(request, 'home.html', {'user': user})
+    else:
+        return redirect('login')
 
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
@@ -45,6 +51,11 @@ def upload_image(request):
     return render(request, 'JobseekerPage.html', {'image_form': form})
 
 def uploadCV(request):
+    if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        user = User.objects.get(id=user_id)
+    else:
+        return redirect('login')
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
         if form.is_valid() and request.FILES:
@@ -72,11 +83,9 @@ def uploadCV(request):
             messages.warning(request,"No hay un cv inicial")
     else:
         form = UploadFileForm()
-    return render(request, 'JobseekerPage.html', {'form': form})
+    return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
 
-#EXAMPLE TEXT
-text = "EXAMPLE OF OUTPUT SELECTION AND DOWNLOAD. " \
-"AI-Need-Job"
+
 
 def generate_docx_response(text):
     """Genera una respuesta en formato DOCX."""
@@ -163,6 +172,11 @@ def generate_txt_response(text):
     return response
 
 def download_cv_generated(request):
+    if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        user = User.objects.get(id=user_id)
+    else:
+        return redirect('login')
     if request.method == 'POST':
         form = SelectOutputFormat(request.POST)
         if form.is_valid():
