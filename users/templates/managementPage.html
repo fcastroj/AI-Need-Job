@@ -5,43 +5,72 @@
     <h2 class="text-center mb-4">Gestión de Vacantes</h2>
 
     {% if vacancies_mapping %}
-        {% for vacancy, resumes in vacancies_mapping.items %}
-            <div class="mt-4">
-                <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
-                <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
-                <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
-                <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
-                <p><strong>Fecha de publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
+    {% for vacancy, resumes in vacancies_mapping.items %}
+    <div class="mt-4">
+        <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
+        <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
+        <p><strong>fecha publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
+        <!-- Botón para desplegar -->
+        <button class="btn btn-outline-primary btn-sm mb-2 toggle-button" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#vacancy-{{ vacancy.id }}" 
+            aria-expanded="false" 
+            aria-controls="vacancy-{{ vacancy.id }}">
+            Mostrar más
+        </button>
+        <style>
+            
+            .toggle-button {
+              color: #009f85; 
+              border-color:#009f85; 
+            }
+            .toggle-button:hover {
+              background-color: #007b5e; 
+              color: white;
+            }
+        </style>
+          
+        <!-- Contenido colapsable -->
+        <div class="collapse" id="vacancy-{{ vacancy.id }}">
+            <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
+            <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
+            <p><strong>Fecha de publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
 
-                <div class="table-responsive mt-3">
-                    <table class="table table-bordered">
-                        <thead class="table-light">
-                            <tr>
-                                <th>#</th>
-                                <th>CV</th>
-                                <th>Usuario</th>
-                                <th>Fecha de aplicación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for applied in resumes %}
-                            <tr>
-                                <th scope="row">{{ forloop.counter }}</th>
-                                <td>{{ applied.resume.file.name }}</td>
-                                <td>{{ applied.resume.uploaded_by.username }}</td>
-                                <td>{{ applied.date_applied|date:"Y-m-d" }}</td>
-                            </tr>
-                            {% empty %}
-                            <tr>
-                                <td colspan="4" class="text-center">No hay CVs aplicados a esta vacante.</td>
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
+            <div class="table-responsive mt-3">
+                <table class="table table-bordered">
+                    <thead class="table-light">
+                        <tr>
+                            <th>#</th>
+                            <th>CV</th>
+                            <th>Usuario</th>
+                            <th>Fecha de aplicación</th>
+                            <th>Similitud</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for applied in resumes %}
+                        <tr>
+                            <th scope="row">{{ forloop.counter }}</th>
+                            <td>{{ applied.resume.file.name }}</td>
+                            <td>{{ applied.resume.uploaded_by.username }}</td>
+                            <td>{{ applied.date_applied|date:"Y-m-d" }}</td>
+                            <td>{{ applied.match_rate|default:"No calculada" }}</td>
+                            <td>{{ applied.state|default:"En espera" }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No hay CVs aplicados a esta vacante.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-            <hr class="my-4">
-        {% endfor %}
+        </div>
+    </div>
+    <hr class="my-4">
+{% endfor %}
+
     {% else %}
         <p class="text-center">No has publicado ninguna vacante.</p>
     {% endif %}

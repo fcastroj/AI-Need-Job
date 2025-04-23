@@ -48,10 +48,13 @@
                             </li>
                         {% else %}
                             <li class="nav-item">
-                                <a class="nav-link active" href="{% url 'upload_cvs' %}">Post an Offer</a>
+                                <a class="nav-link active" href="{% url 'upload_vacancies' %}">Post an Offer</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link active" href="#">View Applications</a>
+                                <a class="nav-link active" href="{% url 'upload_cvs' %}">Evaluate several CVs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link active" href="{% url 'history' %}">View Applications</a>
                             </li>
                         {% endif %}
                     {% endif %}
@@ -90,5 +93,23 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+          const toggleButtons = document.querySelectorAll('.toggle-button');
+      
+          toggleButtons.forEach(button => {
+            const targetId = button.getAttribute('data-bs-target');
+            const collapseEl = document.querySelector(targetId);
+      
+            collapseEl.addEventListener('shown.bs.collapse', function () {
+              button.textContent = 'Mostrar menos';
+            });
+      
+            collapseEl.addEventListener('hidden.bs.collapse', function () {
+              button.textContent = 'Mostrar más';
+            });
+          });
+        });
+      </script>
 </body>
 </html>
