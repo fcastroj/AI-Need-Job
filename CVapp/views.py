@@ -15,8 +15,7 @@ from .models import Resume, Applied_resume, Saved_vacancy
 import os
 import numpy as np
 from openai import OpenAI # type: ignore
-from dotenv import load_dotenv # type: ignore
-
+from django.conf import settings
 
 def home(request):
     if 'user_id' in request.session:
@@ -36,17 +35,31 @@ def feed(request):
         return redirect('login')
     
 def apply_vacancy(request, vacancy_id):
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     if 'user_id' not in request.session:
         return redirect('login')
     user = User.objects.get(id=request.session['user_id'])
-    resume = Resume.objects.get(id=request.POST['resume_id'])
+    resume = Resume.objects.filter(uploaded_by=user).first()  # Assuming the user has only one resume
     vacancy = Vacancy.objects.get(id=vacancy_id)
+    if not resume:
+        messages.warning(request, "No tienes un CV subido")
+        return redirect('upload_cv')
+    if Applied_resume.objects.filter(resume=resume, vacancy=vacancy).exists():
+        messages.warning(request, "Ya has aplicado a esta vacante")
+        return redirect('feed')
+    if resume.embedding is None or vacancy.embedding is None:
+        resume.embedding = get_embedding(resume.extracted_text, client)  # Ensure the resume has an embedding
+        vacancy.embedding = get_embedding(vacancy.description+ vacancy.requirements, client)
+        resume.save()
+        vacancy.save()
     applied_resume = Applied_resume.objects.create(
         resume=resume,
         vacancy=vacancy,
         match_rate=cosine_similarity(resume.embedding, vacancy.embedding),  # Placeholder for the match rate
     )
-
+    applied_resume.save()
+    messages.success(request, "Has aplicado a la vacante con éxito")
+    return redirect('feed')
 
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
@@ -98,7 +111,7 @@ def uploadCV(request):
                 messages.warning(request, "No hay un CV inicial") 
                 return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
             
-            load_dotenv('openai_key.env')
+            
             client = OpenAI(api_key=os.environ.get('openai_api_key'))
             embedding = get_embedding(extracted_text, client)
 
