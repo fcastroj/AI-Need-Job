@@ -5,6 +5,7 @@ from django.contrib.auth.hashers import check_password
 from django.contrib import messages
 from CVapp.models import Resume, Applied_resume, Saved_vacancy
 from offer.models import Vacancy
+
 def login(request):
     if request.method == 'POST':
         form = LoginForm(request.POST)
@@ -29,9 +30,6 @@ def login(request):
 def signup(request):
     if request.method == 'POST':
         form = SignupForm(request.POST)
-        print(request.POST)
-        print(form.errors)
-        print(form.is_valid())
         if form.is_valid():
             form.save()
             return redirect('login')

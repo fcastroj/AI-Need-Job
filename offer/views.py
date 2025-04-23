@@ -1,14 +1,12 @@
 from django.http import JsonResponse, HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UploadFileFormOffer
+from .forms import UploadFileFormOffer, UploadVacancyForm
 from .models import Vacancy
 from PyPDF2 import PdfReader 
+from users.models import User
 # Create your views here.
 
-def offer(request):
-    offers = Vacancy.objects.all()
-    return render(request, 'offer.html', {'offers': offers})
 
 def extract_text_from_pdf(file):
     pdf_reader = PdfReader(file)
@@ -24,6 +22,11 @@ def extract_text(file):
     return text
 
 def uploadCVS(request):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+
+
     if request.method == 'POST':
         form = UploadFileFormOffer(request.POST, request.FILES)
         if form.is_valid() and request.FILES:
@@ -45,4 +48,33 @@ def uploadCVS(request):
             messages.warning(request,"No hay un cv inicial")
     else:
         form = UploadFileFormOffer()
-    return render(request, 'offer.html', {'form': form})
+    return render(request, 'matchingPage.html', {'form': form, 'user': user})
+
+
+def upload_vacancies(request):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+
+    if request.method == 'POST':
+        form = UploadVacancyForm(request.POST)
+        if form.is_valid():
+            title = request.POST['title']
+            description = request.POST['description']
+            requirements = request.POST['requirements']
+
+
+            vacancy = Vacancy(
+                title=title,
+                description=description,
+                requirements=requirements,
+                uploaded_by=user
+            )
+            vacancy.save()
+            messages.success(request, 'Vacante subida con éxito.')
+            return redirect('history')
+        else:
+            messages.warning(request, 'Error al subir la vacante.')
+    else:
+        form = UploadVacancyForm()
+    return render(request, 'offer.html', {'form':form, 'user': user})

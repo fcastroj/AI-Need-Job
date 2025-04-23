@@ -22,7 +22,7 @@
     </div>
     {% elif user.role == 'recruiter' %}
     <div class="container text-center">
-        <a href="{% url 'upload_cvs' %}" class="btn text-white" style="background-color: #009f85;">Post Job Offers</a>
+        <a href="{% url 'upload_vacancies' %}" class="btn text-white" style="background-color: #009f85;">Post Job Offers</a>
         <a href="{% url 'history' %}" class="btn text-white" style="background-color: #009f85;">View Applications</a>
     </section>
     {% endif %}

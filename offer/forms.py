@@ -1,4 +1,5 @@
 from django import forms
+from .models import Vacancy
 
 class UploadFileFormOffer(forms.Form):
     file = forms.FileField(
@@ -7,3 +8,8 @@ class UploadFileFormOffer(forms.Form):
         required=False,
     )
     vacancy = forms.Textarea()
+
+class UploadVacancyForm(forms.Form):
+    title = forms.CharField(max_length=100, required=True)
+    description = forms.CharField(widget=forms.Textarea, required=True)
+    requirements = forms.CharField(widget=forms.Textarea, required=False)
