@@ -9,5 +9,11 @@ class UploadFileForm(forms.Form):
     vacancy = forms.Textarea()
     cv_text = forms.Textarea()
 
+class UploadImageForm(forms.Form):
+    image = forms.ImageField(
+        label='Sube tu foto para el CV',
+        required=True
+    )
+
 class SelectOutputFormat(forms.Form):
     outputFormat = forms.Select()

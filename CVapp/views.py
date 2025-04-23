@@ -1,7 +1,7 @@
 from django.http import HttpResponse
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from .forms import UploadFileForm, SelectOutputFormat
+from .forms import UploadFileForm, SelectOutputFormat, UploadImageForm
 from PyPDF2 import PdfReader # type: ignore
 from docx import Document # type: ignore
 from io import BytesIO # type: ignore
@@ -10,6 +10,8 @@ from reportlab.pdfgen import canvas # type: ignore
 from reportlab.lib import colors # type: ignore
 from reportlab.lib.pagesizes import letter # type: ignore
 from users.models import User
+from django.core.files.storage import FileSystemStorage
+
 
 def home(request):
     if 'user_id' in request.session:
@@ -31,6 +33,22 @@ def extract_text_from_pdf(file):
 def extract_text(file):
     text = file.read().decode('utf-8')
     return text
+
+def upload_image(request):
+    if request.method == 'POST':
+        form = UploadImageForm(request.POST, request.FILES)
+        if form.is_valid():
+            image = request.FILES['image']
+            fs = FileSystemStorage()
+            filename = fs.save(image.name, image)
+            uploaded_image_url = fs.url(filename)
+            return render(request, 'JobseekerPage.html', {
+                'uploaded_image_url': uploaded_image_url,
+                'image_success': True
+            })
+    else:
+        form = UploadImageForm()
+    return render(request, 'JobseekerPage.html', {'image_form': form})
 
 def uploadCV(request):
     if 'user_id' in request.session:

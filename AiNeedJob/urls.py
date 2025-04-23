@@ -9,6 +9,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', cvapp_views.home, name='home'),
     path('upload_cv/', cvapp_views.uploadCV, name='upload_cv'),
+    path('uploadImage/', cvapp_views.upload_image, name='upload_image'),
     path('process_cv/', cvapp_views.download_cv_generated, name='process_cv'),
     path('offer/', include('offer.urls'), name='offer'),
     path('user/', include('users.urls'), name='user'),
