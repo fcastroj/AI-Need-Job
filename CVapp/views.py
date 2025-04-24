@@ -61,18 +61,18 @@ def apply_vacancy(request, vacancy_id):
     messages.success(request, "Has aplicado a la vacante con éxito")
     return redirect('feed')
 
-def extract_text_from_pdf(file):
-    pdf_reader = PdfReader(file)
-    text = ''
-    for page_num in range(len(pdf_reader.pages)):
-        page = pdf_reader.pages[page_num]
-        text += page.extract_text()
-
-    return text
-
-def extract_text(file):
-    text = file.read().decode('utf-8')
-    return text
+def save_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    vacancy = Vacancy.objects.get(id=vacancy_id)
+    if Saved_vacancy.objects.filter(user=user, vacancy=vacancy).exists():
+        messages.warning(request, "Ya has guardado esta vacante")
+    else:
+        saved_vacancy = Saved_vacancy.objects.create(user=user, vacancy=vacancy)
+        saved_vacancy.save()
+        messages.success(request, "Vacante guardada con éxito")
+    return redirect('feed')
 
 def get_embedding(text, client):
     response = client.embeddings.create(
@@ -112,7 +112,7 @@ def uploadCV(request):
                 return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
             
             
-            client = OpenAI(api_key=os.environ.get('openai_api_key'))
+            client = OpenAI(api_key=settings.OPENAI_API_KEY)
             embedding = get_embedding(extracted_text, client)
 
             resume = Resume.objects.create(
@@ -123,7 +123,7 @@ def uploadCV(request):
                 extracted_text=extracted_text,
                 upgraded_cv="",
                 uploaded_by=user,
-                embedding=embedding.tolist() if embedding is not None else None
+                embedding=embedding
             )
             resume.save()
             messages.success(request, "CV subido y procesado con éxito")
@@ -136,6 +136,18 @@ def uploadCV(request):
     return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
 
 
+def extract_text_from_pdf(file):
+    pdf_reader = PdfReader(file)
+    text = ''
+    for page_num in range(len(pdf_reader.pages)):
+        page = pdf_reader.pages[page_num]
+        text += page.extract_text()
+
+    return text
+
+def extract_text(file):
+    text = file.read().decode('utf-8')
+    return text
 
 def generate_docx_response(text):
     """Genera una respuesta en formato DOCX."""
@@ -227,16 +239,17 @@ def download_cv_generated(request):
         user = User.objects.get(id=user_id)
     else:
         return redirect('login')
+    resume = Resume.objects.filter(uploaded_by=user).first()  # Assuming the user has only one resume
     if request.method == 'POST':
         form = SelectOutputFormat(request.POST)
         if form.is_valid():
             outputFormat = request.POST['outputFormat']
             if outputFormat == "pdf":
-                return generate_pdf_response("Hola PDF")
+                return generate_pdf_response(resume.extracted_text)
             if outputFormat == "docx":
-                return generate_docx_response("Hola Docx")  
+                return generate_docx_response(resume.extracted_text)  
             if outputFormat == "txt":
-                return generate_txt_response("Hola Txt")
+                return generate_txt_response(resume.extracted_text)
         else:
             form = SelectOutputFormat()
     return render(request, 'jobseekerPage.html')

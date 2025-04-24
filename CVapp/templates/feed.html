@@ -2,6 +2,19 @@
 {% block content %}
 <div class="container mt-4">
     <h2 class="text-center mb-4">Explora y descubre las mejores vacantes para ti</h2>
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+    {% endif %} 
 {% if vacancies %}
     {% for vacancy in vacancies%}
     <div class="mt-4">
@@ -36,7 +49,7 @@
                 <a href="{% url 'apply' vacancy.id %}" class="btn" style="background-color: #009f85; color: #ffff;">Aplicar</a>
             </div>
             <div class="d-grid mt-4">
-                <a href="" class="btn" style="background-color: #009f85; color: #ffff;">Guardar</a>
+                <a href="{% url 'save' vacancy.id  %}" class="btn" style="background-color: #009f85; color: #ffff;">Guardar</a>
             </div>
         </div>
     </div>
