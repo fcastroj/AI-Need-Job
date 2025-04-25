@@ -74,14 +74,14 @@ def upload_vacancies(request):
 
             extracted_text = description + " " + requirements
             client = OpenAI(api_key=settings.OPENAI_API_KEY)
-            embedding = get_embedding(extracted_text, client)
+            embedding = get_embedding(extracted_text, client).tobytes()
 
             vacancy = Vacancy(
                 title=title,
                 description=description,
                 requirements=requirements,
                 uploaded_by=user,
-                embedding=embedding.tolist(),  # Convert numpy array to list for storage
+                embedding=embedding,  
             )
             
             vacancy.save()

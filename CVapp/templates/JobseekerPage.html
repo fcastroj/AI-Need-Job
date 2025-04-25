@@ -39,11 +39,6 @@
     </div>
 </form>
 
-{% if image_success %}
-    <div class="alert alert-success mt-3">
-      Imagen subida correctamente: <a href="{{ uploaded_image_url }}" target="_blank">Ver imagen</a>
-    </div>
-{% endif %}
 
 <form method="post" enctype="multipart/form-data" action="{% url 'process_cv' %}" class="p-4 border rounded bg-light mt-3">
     {% csrf_token %}

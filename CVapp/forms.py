@@ -23,4 +23,7 @@ class UploadFileForm(forms.Form):
 
 
 class SelectOutputFormat(forms.Form):
-    outputFormat = forms.Select()
+    outputFormat = forms.ChoiceField(
+        choices=[('txt', 'TXT'), ('docx', 'DOCX'), ('pdf', 'PDF')],
+        widget=forms.Select(attrs={'class': 'form-select'})
+    )
