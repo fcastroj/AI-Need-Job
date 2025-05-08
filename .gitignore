@@ -1,1 +1,4 @@
 *.pyc
+openai_key.env
+*.env
+venv/
