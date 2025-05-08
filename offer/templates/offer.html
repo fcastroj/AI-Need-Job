@@ -1,26 +1,46 @@
 {% extends 'base.html' %}
 {% block content %}
+{% load form_tags %}
 
-<form method="post" enctype="multipart/form-data" action="{% url 'upload_cvs' %}">
+{% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+
+<form method="post" enctype="multipart/form-data" action="{% url 'upload_vacancies' %}">
     {% csrf_token %}
+
     <div class="mb-3">
-        <label for="id_file" class="form-label">Selecciona los archivos que quiere evaluar</label>
-        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt" multiple>
+        <label for="id_title" class="form-label">Título de la vacante</label>
+        {{ form.title|add_class:"form-control" }}
     </div>
-    <div class="mt-4">
 
-        <div class="md-6 custom-box">
-            <label for="vacancy" class="form-label">Ingresa vacante y especificaciones</label>
-            <textarea required=True name="vacancy" class="form-control" id="vacancy" rows="10" placeholder="Text">{{ vacancy }}</textarea>
-        </div>
+    <div class="mb-3">
+        <label for="id_description" class="form-label">Descripción</label>
+        {{ form.description|add_class:"form-control" }}
     </div>
-    <div class="d-grid mt-3">
-        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Evaluar hojas de vida</button>
+
+    <div class="mb-3">
+        <label for="id_requirements" class="form-label">Especificaciones o Requisitos</label>
+        {{ form.requirements|add_class:"form-control" }}
     </div>
-    <div class="d-grid mt-3">
-        <button class="btn" style="background-color: #009f85; color: #ffff;">Mejorar presentacion de vacante</button>
+
+    <div class="d-grid mt-4">
+        <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Publicar vacante</button>
     </div>
+
 </form>
-
 {% endblock content %}
+
+
 

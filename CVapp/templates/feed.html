@@ -1,0 +1,63 @@
+{% extends 'base.html'%}
+{% block content %}
+<div class="container mt-4">
+    <h2 class="text-center mb-4">Explora y descubre las mejores vacantes para ti</h2>
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+    {% endif %} 
+{% if vacancies %}
+    {% for vacancy in vacancies%}
+    <div class="mt-4">
+        <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
+        <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
+        <p><strong>fecha publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
+        <!-- Botón para desplegar -->
+        <button class="btn btn-outline-primary btn-sm mb-2 toggle-button" type="button" 
+            data-bs-toggle="collapse" 
+            data-bs-target="#vacancy-{{ vacancy.id }}" 
+            aria-expanded="false" 
+            aria-controls="vacancy-{{ vacancy.id }}">
+            Mostrar más
+        </button>
+        <style>
+            
+            .toggle-button {
+              color: #009f85; 
+              border-color:#009f85; 
+            }
+            .toggle-button:hover {
+              background-color: #007b5e; 
+              color: white;
+            }
+        </style>
+          
+        <!-- Contenido colapsable -->
+        <div class="collapse" id="vacancy-{{ vacancy.id }}">
+            <p><strong>Descripción:</strong> {{ vacancy.description }}</p>
+            <p><strong>Requisitos:</strong> {{ vacancy.requirements|default:"No especificados" }}</p>
+            <div class="d-grid mt-4">
+                <a href="{% url 'apply' vacancy.id %}" class="btn" style="background-color: #009f85; color: #ffff;">Aplicar</a>
+            </div>
+            <div class="d-grid mt-4">
+                <a href="{% url 'save' vacancy.id  %}" class="btn" style="background-color: #009f85; color: #ffff;">Guardar</a>
+            </div>
+        </div>
+    </div>
+    <hr class="my-4">
+    {% endfor %}
+
+{% else %}
+    <p class="text-center">No hay ninguna vacante publicada.</p>
+{% endif %}
+</div>
+{% endblock content %}
