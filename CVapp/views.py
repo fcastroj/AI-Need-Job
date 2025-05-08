@@ -243,3 +243,12 @@ def generate_txt_response(text):
     buffer.write(text.encode('utf-8'))
     buffer.seek(0)
     return HttpResponse(buffer, content_type='text/plain', headers={'Content-Disposition': 'attachment; filename=mejorado_cv.txt'})
+
+def resume_history(request):
+    if 'user_id' in request.session:
+        user_id = request.session['user_id']
+        user = User.objects.get(id=user_id)
+        resumes = Resume.objects.filter(user=user).order_by('-upload_date')
+        return render(request, 'historyPage.html', {'resumes': resumes})
+    else:
+        return redirect('login')

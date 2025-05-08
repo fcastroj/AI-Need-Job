@@ -5,6 +5,7 @@ def get_default_array():
     default_arr = np.random.rand(1536)
     return default_arr.tobytes()
 
+
 class Vacancy(models.Model):
     title = models.CharField(max_length=100)
     description = models.TextField()
