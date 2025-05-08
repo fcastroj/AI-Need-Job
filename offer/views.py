@@ -92,3 +92,22 @@ def upload_vacancies(request):
     else:
         form = UploadVacancyForm()
     return render(request, 'offer.html', {'form':form, 'user': user})
+
+def change_state_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    vacancy = Vacancy.objects.get(id=vacancy_id)
+    if vacancy.uploaded_by.id != request.session['user_id']:
+        messages.error(request, 'No tienes permiso para cambiar el estado de esta vacante.')
+        return redirect('history')
+    if vacancy.state == 'open':
+        vacancy.state = 'closed'
+        vacancy.save()
+        messages.warning(request, 'Vacante cerrada con éxito.')
+        return redirect('history')
+
+    if vacancy.state == 'closed':
+        vacancy.state = 'open'
+        vacancy.save()
+        messages.success(request, 'Vacante abierta con éxito.')
+    return redirect('history')
