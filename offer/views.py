@@ -8,7 +8,7 @@ from users.models import User
 import os
 import numpy as np
 from openai import OpenAI # type: ignore
-from dotenv import load_dotenv # type: ignore
+from django.conf import settings
 
 
 def extract_text_from_pdf(file):
@@ -73,16 +73,15 @@ def upload_vacancies(request):
             requirements = request.POST['requirements']
 
             extracted_text = description + " " + requirements
-            load_dotenv('openai_key.env')
-            client = OpenAI(api_key=os.environ.get('openai_api_key'))
-            embedding = get_embedding(extracted_text, client)
+            client = OpenAI(api_key=settings.OPENAI_API_KEY)
+            embedding = get_embedding(extracted_text, client).tobytes()
 
             vacancy = Vacancy(
                 title=title,
                 description=description,
                 requirements=requirements,
                 uploaded_by=user,
-                embedding=embedding.tolist(),  # Convert numpy array to list for storage
+                embedding=embedding,  
             )
             
             vacancy.save()

@@ -3,7 +3,19 @@
 
 <div class="container mt-5">
     <h2 class="text-center mb-4">Historial</h2>
-
+    {% if messages %}
+    {% for message in messages %}
+        {% if message.tags == 'success' %}
+            <p class="alert alert-success mt-3">{{ message }}</p>
+        {% elif message.tags == 'error' %}
+            <p class="alert alert-danger mt-3">{{ message }}</p>
+        {% elif message.tags == 'warning' %}
+            <p class="alert alert-warning mt-3">{{ message }}</p>
+        {% else %}
+            <p class="alert alert-info mt-3">{{ message }}</p>
+        {% endif %}
+    {% endfor %}
+    {% endif %} 
     <div class="table-responsive">
         <table class="table table-bordered">
             <thead class="table-light">
@@ -32,17 +44,33 @@
                     <td>El CV {{ applied.resume.file.name }} fue aplicado a la vacante "{{ applied.vacancy.title }}".</td>
                 </tr>
                 {% endfor %}
-
-                {% for saved in saved_vacancies %}
-                <tr>
-                    <th scope="row">{{ forloop.counter|add:resumes.count|add:applied_resumes.count }}</th>
-                    <td>Vacante Guardada</td>
-                    <td>{{ saved.saved_at|date:"Y-m-d" }}</td>
-                    <td>Se guardó la vacante "{{ saved.vacancy.title }}".</td>
-                </tr>
-                {% endfor %}
             </tbody>
         </table>
+        </div>
+
+        <h3 class="text-center mt-5">Vacantes Guardadas</h3>
+        <div class="table-responsive mt-3">
+            <table class="table table-bordered">
+                <thead class="table-light">
+                    <tr>
+                        <th>#</th>
+                        <th>Acción</th>
+                        <th>Fecha</th>
+                        <th>Descripción</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for saved in saved_vacancies %}
+                    <tr>
+                        <th scope="row">{{ forloop.counter }}</th>
+                        <td>Vacante Guardada</td>
+                        <td>{{ saved.saved_at|date:"Y-m-d" }}</td>
+                        <td>Se guardó la vacante "{{ saved.vacancy.title }}".</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div class="d-grid mt-3">

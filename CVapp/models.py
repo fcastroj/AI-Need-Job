@@ -1,6 +1,11 @@
 from django.db import models
 from users.models import User
 from offer.models import Vacancy
+import numpy as np
+
+def get_default_array():
+    default_arr = np.random.rand(1536)
+    return default_arr.tobytes()
 
 class Resume(models.Model):
     version = models.CharField(max_length=10)
@@ -10,7 +15,7 @@ class Resume(models.Model):
     upgraded_cv = models.TextField()
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    embedding = models.TextField(blank=True, null=True)  # Placeholder for the embedding of the resume
+    embedding = models.BinaryField(default=get_default_array)  # Store the embedding as a binary field
     image = models.ImageField(upload_to='images/resumes/', blank=True, null=True)
 
     def __str__(self):
