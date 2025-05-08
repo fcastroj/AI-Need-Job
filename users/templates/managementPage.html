@@ -20,7 +20,7 @@
     {% for vacancy, resumes in vacancies_mapping.items %}
     <div class="mt-4">
         <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
-        <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
+        <p><strong>Estado:</strong> {{ vacancy.get_state_display }} <a style="color:#009f85;" href="{% url 'change_vacancy_state' vacancy.id%}">   change</a></p> 
         <p><strong>fecha publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
         <!-- Botón para desplegar -->
         <button class="btn btn-outline-primary btn-sm mb-2 toggle-button" type="button" 
