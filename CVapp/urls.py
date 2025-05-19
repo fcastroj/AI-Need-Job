@@ -7,5 +7,5 @@ urlpatterns = [
     path('feed/', views.feed, name='feed'),
     path('apply/<int:vacancy_id>/', views.apply_vacancy, name='apply'),
     path('vacancy/save/<int:vacancy_id>', views.save_vacancy, name='save'),
-    path('process_cv/', views.download_cv_generated, name='process_cv'),
+    path('mejorar-cv/', views.mejorar_cv, name='mejorar_cv'),
 ]
