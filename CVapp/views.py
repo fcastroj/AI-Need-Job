@@ -88,6 +88,61 @@ def uploadCV(request):
     return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
 
 
+def mejorar_cv(request):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Resume.objects.filter(uploaded_by=user).last()
+    if not resume:
+        messages.error(request, "No has subido un CV aún.")
+        return redirect('upload_cv')
+
+    vacancy_text = resume.vacancy_text
+    cv_text = resume.extracted_text
+
+    prompt = (
+        f"Aquí está la descripción de una vacante: {vacancy_text}\n\n"
+        f"Este es el CV actual:\n{cv_text}\n\n"
+        f"""
+            A continuación te proporcionaré el texto de un currículum vitae y una vacante. 
+
+            Quiero que edites el CV para que resaltes las habilidades y experiencias que son relevantes para la vacante, 
+            eliminando información irrelevante que no se ajuste al puesto. 
+
+            No debes inventar información ni eliminar datos personales como el nombre, correo electrónico o número de teléfono. 
+            Tampoco incluyas comentarios adicionales ni ningún mensaje como "Aquí está tu CV mejorado"; 
+            solo necesito el texto del currículum actualizado.
+        """
+    )
+
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.7,
+    )
+
+    new_cv = response.choices[0].message.content.strip()
+    resume.upgraded_cv = new_cv
+    resume.save()
+    if request.method == 'POST':
+        form = SelectOutputFormat(request.POST)
+        if form.is_valid():
+            format_selected = form.cleaned_data['outputFormat']
+            if format_selected == "pdf":
+                return generate_pdf_response(resume.upgraded_cv)
+            elif format_selected == "docx":
+                return generate_docx_response(resume.upgraded_cv)
+            elif format_selected == "txt":
+                return generate_txt_response(resume.upgraded_cv)
+    else:
+        form = SelectOutputFormat()
+
+    return render(request, 'jobseekerPage.html', {'form': form})
+
+
 # Guardar y aplicar a vacantes
 def apply_vacancy(request, vacancy_id):
     if 'user_id' not in request.session:
@@ -189,31 +244,7 @@ def extract_text(file):
     return file.read().decode('utf-8')
 
 
-# Descargar CV
-def download_cv_generated(request):
-    if 'user_id' not in request.session:
-        return redirect('login')
-
-    user = User.objects.get(id=request.session['user_id'])
-    resume = Resume.objects.filter(uploaded_by=user).first()
-
-    if request.method == 'POST':
-        form = SelectOutputFormat(request.POST)
-        if form.is_valid():
-            format_selected = form.cleaned_data['outputFormat']
-            if format_selected == "pdf":
-                return generate_pdf_response(resume.extracted_text)
-            elif format_selected == "docx":
-                return generate_docx_response(resume.extracted_text)
-            elif format_selected == "txt":
-                return generate_txt_response(resume.extracted_text)
-    else:
-        form = SelectOutputFormat()
-
-    return render(request, 'jobseekerPage.html', {'form': form})
-
 # generar CV file
-
 def generate_docx_response(text):
     doc = Document()
     doc.add_paragraph(text)
