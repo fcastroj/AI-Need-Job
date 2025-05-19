@@ -102,19 +102,24 @@ def mejorar_cv(request):
     cv_text = resume.extracted_text
 
     prompt = (
-        f"Aquí está la descripción de una vacante: {vacancy_text}\n\n"
-        f"Este es el CV actual:\n{cv_text}\n\n"
-        f"""
-            A continuación te proporcionaré el texto de un currículum vitae y una vacante. 
+            f"VACANTE:\n{vacancy_text}\n\n"
+            f"CV ACTUAL:\n{cv_text}\n\n"
+            f"""
+        Eres un experto en redacción de currículums optimizados para vacantes específicas. A partir del CV actual y la descripción de la vacante que te proporciono, realiza una versión mejorada del CV que:
 
-            Quiero que edites el CV para que resaltes las habilidades y experiencias que son relevantes para la vacante, 
-            eliminando información irrelevante que no se ajuste al puesto. 
+        - Destaque con claridad las habilidades, experiencias y logros relevantes para la vacante.
+        - Reorganice o reformule el contenido para hacerlo más atractivo, convincente y profesional.
+        - Elimine y omita la información que no aporte valor a la postulación.
+        - Use un lenguaje proactivo, orientado a resultados y alineado con la terminología de la vacante.
+        - Mantenga intacta la información personal como nombre, correo y teléfono.
+        - No inventes datos, títulos ni experiencia que no estén presentes en el CV original.
+        - NO incluyas ninguna introducción, comentario, conclusión ni frases como "Aquí está el CV mejorado". Solo entrega el texto final del currículum optimizado y estructurado.
+        - Mejora el orden y los títulos de las secciones si es necesario para que el CV sea más claro y enfocado.
 
-            No debes inventar información ni eliminar datos personales como el nombre, correo electrónico o número de teléfono. 
-            Tampoco incluyas comentarios adicionales ni ningún mensaje como "Aquí está tu CV mejorado"; 
-            solo necesito el texto del currículum actualizado.
+        Tu objetivo es que el CV sea visual y estratégicamente más potente para aplicar a esta vacante específica.
         """
     )
+
 
     client = OpenAI(api_key=settings.OPENAI_API_KEY)
     response = client.chat.completions.create(
