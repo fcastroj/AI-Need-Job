@@ -46,9 +46,15 @@ def uploadCV(request):
         return redirect('login')
 
     user = User.objects.get(id=request.session['user_id'])
-
+    initial_data = {} 
+    vacancy_id = request.GET.get('vacancy_id')
+    if vacancy_id:
+            saved_vacancy = Vacancy.objects.get(id=vacancy_id)
+            initial_data['vacancy'] = f"{saved_vacancy.description} \n {saved_vacancy.requirements}" 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
+
+
         if form.is_valid():
             file = request.FILES.get('file')
             image = request.FILES.get('image')
@@ -83,9 +89,9 @@ def uploadCV(request):
             print(form.errors)
             messages.error(request, "Formulario no válido")
     else:
-        form = UploadFileForm()
+        form = UploadFileForm(initial=initial_data) 
 
-    return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
+    return render(request, 'JobseekerPage.html', {'form': form, 'user': user, 'vacancy': initial_data.get('vacancy', '')})
 
 
 def mejorar_cv(request):
@@ -310,3 +316,24 @@ def generate_txt_response(text):
     buffer.write(text.encode('utf-8'))
     buffer.seek(0)
     return HttpResponse(buffer, content_type='text/plain', headers={'Content-Disposition': 'attachment; filename=mejorado_cv.txt'})
+
+
+
+#
+def redirect_to_cv_inprover(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+   
+    saved_vacancy = Saved_vacancy.objects.filter(id=vacancy_id).first()
+    vacancy = Vacancy.objects.filter(id=saved_vacancy.vacancy.id).first()
+
+    if not vacancy:
+        messages.error(request, "No se encontró la vacante")
+        return redirect('feed')
+    
+    if Applied_resume.objects.filter(vacancy=vacancy, resume__uploaded_by=user).exists():
+        messages.warning(request, "Ya has aplicado a esta vacante")
+        return redirect('feed')
+    
+    return redirect(f"/upload_cv/?vacancy_id={vacancy.id}")
