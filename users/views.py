@@ -54,9 +54,9 @@ def history(request):
         return redirect('login')
     user = User.objects.get(id=request.session['user_id'])
     if user.role == 'jobseeker':
-        resumes = Resume.objects.filter(uploaded_by=user)
-        applied_resumes = Applied_resume.objects.filter(resume__uploaded_by=user)
-        saved_vacancies = Saved_vacancy.objects.filter(user=user)
+        resumes = Resume.objects.filter(uploaded_by=user.id)
+        applied_resumes = Applied_resume.objects.filter(resume__uploaded_by=user.id)
+        saved_vacancies = Saved_vacancy.objects.filter(user=user.id)
 
 
         context = {
