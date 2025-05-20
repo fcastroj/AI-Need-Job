@@ -182,6 +182,37 @@ def apply_vacancy(request, vacancy_id):
     messages.success(request, "Has aplicado a la vacante con éxito")
     return redirect('feed')
 
+def delete_cv(request, cv_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Resume.objects.get(id=cv_id, uploaded_by=user)
+
+    resume_applied = Applied_resume.objects.filter(resume=resume).exists()
+    if resume_applied:
+        messages.warning(request, "No puedes eliminar un CV que ya has usado para aplicar a una vacante")
+        return redirect('history')
+
+    resume.delete()
+    messages.success(request, "CV eliminado con éxito")
+    return redirect('history')
+
+   
+
+def unsave_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    try:
+        saved_vacancy = Saved_vacancy.objects.get(user=user, id=vacancy_id)
+        saved_vacancy.delete()
+        messages.success(request, "Vacante eliminada de favoritos")
+    except Saved_vacancy.DoesNotExist:
+        messages.warning(request, "No has guardado esta vacante")
+
+    return redirect('history')
 
 def save_vacancy(request, vacancy_id):
     if 'user_id' not in request.session:

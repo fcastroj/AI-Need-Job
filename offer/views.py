@@ -103,7 +103,7 @@ def change_state_vacancy(request, vacancy_id):
     if vacancy.state == 'open':
         vacancy.state = 'closed'
         vacancy.save()
-        messages.warning(request, 'Vacante cerrada con éxito.')
+        messages.success(request, 'Vacante cerrada con éxito.')
         return redirect('history')
 
     if vacancy.state == 'closed':
