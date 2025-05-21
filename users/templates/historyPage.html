@@ -24,6 +24,7 @@
                     <th>Acción</th>
                     <th>Fecha</th>
                     <th>Descripción</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -77,6 +78,8 @@
                         <th>Acción</th>
                         <th>Fecha</th>
                         <th>Descripción</th>
+                        <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -88,7 +91,11 @@
                         <td>Se guardó la vacante "{{ saved.vacancy.title }}".</td>
                         <td>
                             <a href="{% url 'unsave' saved.id %}" class="btn btn-danger btn-sm">Borrar</a>
-                    </tr>
+                        </td>
+                        <td>
+                            <a href="{% url 'goto_cv_improver' saved.id 'saved' %}" class="btn btn-success btn-sm">Seleccionar</a>
+                        </td>
+                        </tr>
                     {% endfor %}
                 </tbody>
             </table>
