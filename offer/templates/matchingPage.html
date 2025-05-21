@@ -5,7 +5,7 @@
     {% csrf_token %}
     <div class="mb-3">
         <label for="id_file" class="form-label">Selecciona los archivos que quiere evaluar</label>
-        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt">
+        <input type="file" name="file" class="form-control" id="id_file" accept=".pdf,.md,.txt" multiple>
     </div>
     <div class="mt-4">
 
@@ -18,6 +18,27 @@
         <button type="submit" class="btn" style="background-color: #009f85; color: #ffff;">Evaluar hojas de vida</button>
     </div>
 </form>
+
+{% if best_cv %}
+    <div class="alert alert-success mt-4">
+        <h5>El CV más apto para esta vacante:</h5>
+        <strong>{{ best_cv.filename }}</strong> (Score: {{ best_cv.score|floatformat:2 }})
+        <pre style="white-space: pre-wrap;">{{ best_cv.cv_text }}</pre>
+    </div>
+{% endif %}
+
+{% if ranking %}
+    <div class="mt-4">
+        <h5>Ranking de CVs:</h5>
+        <ol>
+        {% for cv in ranking %}
+            <li>
+                <strong>{{ cv.filename }}</strong> (Score: {{ cv.score|floatformat:2 }})
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+{% endif %}
 
 {% endblock content %}
 

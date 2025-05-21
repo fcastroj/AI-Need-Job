@@ -159,34 +159,47 @@ def apply_vacancy(request, vacancy_id):
     if 'user_id' not in request.session:
         return redirect('login')
 
-    client = OpenAI(api_key=settings.OPENAI_API_KEY)
     user = User.objects.get(id=request.session['user_id'])
-    resume = Resume.objects.filter(uploaded_by=user).first()
     vacancy = Vacancy.objects.get(id=vacancy_id)
+    resumes = Resume.objects.filter(uploaded_by=user)
 
-    if not resume:
+    if not resumes.exists():
         messages.warning(request, "No tienes un CV subido")
         return redirect('upload_cv')
 
-    if Applied_resume.objects.filter(resume=resume, vacancy=vacancy).exists():
-        messages.warning(request, "Ya has aplicado a esta vacante")
+    if request.method == 'POST':
+        selected_resume_id = request.POST.get('resume_id')
+        resume = Resume.objects.filter(id=selected_resume_id, uploaded_by=user).first()
+        if not resume:
+            messages.error(request, "Debes seleccionar un CV válido.")
+            return redirect('apply', vacancy_id=vacancy_id)
+
+        client = OpenAI(api_key=settings.OPENAI_API_KEY)
+        if Applied_resume.objects.filter(resume=resume, vacancy=vacancy).exists():
+            messages.warning(request, "Ya has aplicado a esta vacante con este CV")
+            return redirect('feed')
+
+        if resume.embedding is None or vacancy.embedding is None:
+            resume.embedding = get_embedding(resume.extracted_text, client).tobytes()
+            vacancy.embedding = get_embedding(vacancy.description + vacancy.requirements, client).tobytes()
+            resume.save()
+            vacancy.save()
+        resume_emb = np.frombuffer(resume.embedding, dtype=np.float32)
+        vacancy_emb = np.frombuffer(vacancy.embedding, dtype=np.float32)
+        Applied_resume.objects.create(
+            resume=resume,
+            vacancy=vacancy,
+            match_rate=cosine_similarity(resume_emb, vacancy_emb),
+        )
+
+        messages.success(request, "Has aplicado a la vacante con éxito")
         return redirect('feed')
 
-    if resume.embedding is None or vacancy.embedding is None:
-        resume.embedding = get_embedding(resume.extracted_text, client).tobytes()
-        vacancy.embedding = get_embedding(vacancy.description + vacancy.requirements, client).tobytes()
-        resume.save()
-        vacancy.save()
-    resume_emb = np.frombuffer(resume.embedding, dtype=np.float32)
-    vacancy_emb = np.frombuffer(vacancy.embedding, dtype=np.float32)
-    Applied_resume.objects.create(
-        resume=resume,
-        vacancy=vacancy,
-        match_rate=cosine_similarity(resume_emb, vacancy_emb),
-    )
-
-    messages.success(request, "Has aplicado a la vacante con éxito")
-    return redirect('feed')
+    return render(request, 'select_resume.html', {
+        'vacancy': vacancy,
+        'resumes': resumes,
+        'user': user,
+    })
 
 def delete_cv(request, cv_id):
     if 'user_id' not in request.session:
