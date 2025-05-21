@@ -20,7 +20,7 @@
     {% for vacancy, resumes in vacancies_mapping.items %}
     <div class="mt-4">
         <h4 class="mb-2">Vacante: {{ vacancy.title }}</h4>
-        <p><strong>Estado:</strong> {{ vacancy.get_state_display }}</p>
+        <p><strong>Estado:</strong> {{ vacancy.get_state_display }} <a style="color:#009f85;" href="{% url 'change_vacancy_state' vacancy.id%}">   change</a></p> 
         <p><strong>fecha publicación:</strong> {{ vacancy.uploaded_at|date:"Y-m-d" }}</p>
         <!-- Botón para desplegar -->
         <button class="btn btn-outline-primary btn-sm mb-2 toggle-button" type="button" 
@@ -57,6 +57,7 @@
                             <th>Fecha de aplicación</th>
                             <th>Similitud</th>
                             <th>Estado</th>
+                            <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -68,6 +69,13 @@
                             <td>{{ applied.applied_at|date:"Y-m-d" }}</td>
                             <td>{{ applied.match_rate|floatformat:2|default:"No calculada" }}</td>
                             <td>{{ applied.state|default:"En espera" }}</td>
+                            <td>
+                                {% if applied.state == 'applied' %}
+                                    <a href="{% url 'accept_resume' applied.id %}" class="btn btn-success btn-sm">Aceptar</a>
+                                    <a href="{% url 'reject_resume' applied.id %}" class="btn btn-danger btn-sm">Rechazar</a>
+                                {% else%}
+                                   <a> Sin Acciones disponibles</a>
+                                {% endif %}
                         </tr>
                         {% empty %}
                         <tr>

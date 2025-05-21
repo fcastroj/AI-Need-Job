@@ -46,9 +46,15 @@ def uploadCV(request):
         return redirect('login')
 
     user = User.objects.get(id=request.session['user_id'])
-
+    initial_data = {} 
+    vacancy_id = request.GET.get('vacancy_id')
+    if vacancy_id:
+            saved_vacancy = Vacancy.objects.get(id=vacancy_id)
+            initial_data['vacancy'] = f"{saved_vacancy.description} \n {saved_vacancy.requirements}" 
     if request.method == 'POST':
         form = UploadFileForm(request.POST, request.FILES)
+
+
         if form.is_valid():
             file = request.FILES.get('file')
             image = request.FILES.get('image')
@@ -83,9 +89,69 @@ def uploadCV(request):
             print(form.errors)
             messages.error(request, "Formulario no válido")
     else:
-        form = UploadFileForm()
+        form = UploadFileForm(initial=initial_data) 
 
-    return render(request, 'JobseekerPage.html', {'form': form, 'user': user})
+    return render(request, 'JobseekerPage.html', {'form': form, 'user': user, 'vacancy': initial_data.get('vacancy', '')})
+
+
+def mejorar_cv(request):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Resume.objects.filter(uploaded_by=user).last()
+    if not resume:
+        messages.error(request, "No has subido un CV aún.")
+        return redirect('upload_cv')
+
+    vacancy_text = resume.vacancy_text
+    cv_text = resume.extracted_text
+
+    prompt = (
+            f"VACANTE:\n{vacancy_text}\n\n"
+            f"CV ACTUAL:\n{cv_text}\n\n"
+            f"""
+        Eres un experto en redacción de currículums optimizados para vacantes específicas. A partir del CV actual y la descripción de la vacante que te proporciono, realiza una versión mejorada del CV que:
+
+        - Destaque con claridad las habilidades, experiencias y logros relevantes para la vacante.
+        - Reorganice o reformule el contenido para hacerlo más atractivo, convincente y profesional.
+        - Elimine y omita la información que no aporte valor a la postulación.
+        - Use un lenguaje proactivo, orientado a resultados y alineado con la terminología de la vacante.
+        - Mantenga intacta la información personal como nombre, correo y teléfono.
+        - No inventes datos, títulos ni experiencia que no estén presentes en el CV original.
+        - NO incluyas ninguna introducción, comentario, conclusión ni frases como "Aquí está el CV mejorado". Solo entrega el texto final del currículum optimizado y estructurado.
+        - Mejora el orden y los títulos de las secciones si es necesario para que el CV sea más claro y enfocado.
+
+        Tu objetivo es que el CV sea visual y estratégicamente más potente para aplicar a esta vacante específica.
+        """
+    )
+
+
+    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[{"role": "user", "content": prompt}],
+        max_tokens=1024,
+        temperature=0.7,
+    )
+
+    new_cv = response.choices[0].message.content.strip()
+    resume.upgraded_cv = new_cv
+    resume.save()
+    if request.method == 'POST':
+        form = SelectOutputFormat(request.POST)
+        if form.is_valid():
+            format_selected = form.cleaned_data['outputFormat']
+            if format_selected == "pdf":
+                return generate_pdf_response(resume.upgraded_cv)
+            elif format_selected == "docx":
+                return generate_docx_response(resume.upgraded_cv)
+            elif format_selected == "txt":
+                return generate_txt_response(resume.upgraded_cv)
+    else:
+        form = SelectOutputFormat()
+
+    return render(request, 'jobseekerPage.html', {'form': form})
 
 
 # Guardar y aplicar a vacantes
@@ -129,11 +195,37 @@ def apply_vacancy(request, vacancy_id):
         messages.success(request, "Has aplicado a la vacante con éxito")
         return redirect('feed')
 
-    return render(request, 'select_resume.html', {
-        'vacancy': vacancy,
-        'resumes': resumes,
-        'user': user,
-    })
+def delete_cv(request, cv_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Resume.objects.get(id=cv_id, uploaded_by=user)
+
+    resume_applied = Applied_resume.objects.filter(resume=resume).exists()
+    if resume_applied:
+        messages.warning(request, "No puedes eliminar un CV que ya has usado para aplicar a una vacante")
+        return redirect('history')
+
+    resume.delete()
+    messages.success(request, "CV eliminado con éxito")
+    return redirect('history')
+
+   
+
+def unsave_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+
+    user = User.objects.get(id=request.session['user_id'])
+    try:
+        saved_vacancy = Saved_vacancy.objects.get(user=user, id=vacancy_id)
+        saved_vacancy.delete()
+        messages.success(request, "Vacante eliminada de favoritos")
+    except Saved_vacancy.DoesNotExist:
+        messages.warning(request, "No has guardado esta vacante")
+
+    return redirect('history')
 
 def save_vacancy(request, vacancy_id):
     if 'user_id' not in request.session:
@@ -170,31 +262,7 @@ def extract_text(file):
     return file.read().decode('utf-8')
 
 
-# Descargar CV
-def download_cv_generated(request):
-    if 'user_id' not in request.session:
-        return redirect('login')
-
-    user = User.objects.get(id=request.session['user_id'])
-    resume = Resume.objects.filter(uploaded_by=user).first()
-
-    if request.method == 'POST':
-        form = SelectOutputFormat(request.POST)
-        if form.is_valid():
-            format_selected = form.cleaned_data['outputFormat']
-            if format_selected == "pdf":
-                return generate_pdf_response(resume.extracted_text)
-            elif format_selected == "docx":
-                return generate_docx_response(resume.extracted_text)
-            elif format_selected == "txt":
-                return generate_txt_response(resume.extracted_text)
-    else:
-        form = SelectOutputFormat()
-
-    return render(request, 'jobseekerPage.html', {'form': form})
-
 # generar CV file
-
 def generate_docx_response(text):
     doc = Document()
     doc.add_paragraph(text)
@@ -256,11 +324,26 @@ def generate_txt_response(text):
     buffer.seek(0)
     return HttpResponse(buffer, content_type='text/plain', headers={'Content-Disposition': 'attachment; filename=mejorado_cv.txt'})
 
-def resume_history(request):
-    if 'user_id' in request.session:
-        user_id = request.session['user_id']
-        user = User.objects.get(id=user_id)
-        resumes = Resume.objects.filter(user=user).order_by('-upload_date')
-        return render(request, 'historyPage.html', {'resumes': resumes})
-    else:
+
+
+#
+def redirect_to_cv_inprover(request, vacancy_id, origin):
+    if 'user_id' not in request.session:
         return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    if origin == 'saved':
+            saved_vacancy = Saved_vacancy.objects.filter(id=vacancy_id).first()
+            vacancy = Vacancy.objects.filter(id=saved_vacancy.vacancy.id).first()
+
+    if origin == 'published':
+            vacancy = Vacancy.objects.filter(id=vacancy_id).first()
+
+    if not vacancy:
+        messages.error(request, "No se encontró la vacante")
+        return redirect('feed')
+    
+    if Applied_resume.objects.filter(vacancy=vacancy, resume__uploaded_by=user).exists() and origin == 'saved':
+        messages.warning(request, "Ya has aplicado a esta vacante")
+        return redirect('feed')
+    
+    return redirect(f"/upload_cv/?vacancy_id={vacancy.id}")

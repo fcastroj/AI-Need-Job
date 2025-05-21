@@ -3,6 +3,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from .forms import UploadFileFormOffer, UploadVacancyForm
 from .models import Vacancy
+from CVapp.models import Applied_resume 
 from PyPDF2 import PdfReader 
 from users.models import User
 import os
@@ -92,3 +93,55 @@ def upload_vacancies(request):
     else:
         form = UploadVacancyForm()
     return render(request, 'offer.html', {'form':form, 'user': user})
+
+def change_state_vacancy(request, vacancy_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    vacancy = Vacancy.objects.get(id=vacancy_id)
+    if vacancy.uploaded_by.id != request.session['user_id']:
+        messages.error(request, 'No tienes permiso para cambiar el estado de esta vacante.')
+        return redirect('history')
+    if vacancy.state == 'open':
+        vacancy.state = 'closed'
+        vacancy.save()
+        messages.success(request, 'Vacante cerrada con éxito.')
+        return redirect('history')
+
+    if vacancy.state == 'closed':
+        vacancy.state = 'open'
+        vacancy.save()
+        messages.success(request, 'Vacante abierta con éxito.')
+    return redirect('history')
+
+
+def accept_resume(request, resume_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Applied_resume.objects.get(id=resume_id)
+    if resume.vacancy.uploaded_by.id != user.id:
+        messages.error(request, 'No tienes permiso para aceptar este CV.')
+        return redirect('history')
+    if resume.state != 'applied':
+        messages.error(request, 'Este CV ya ha sido procesado.')
+        return redirect('history')
+    resume.state = 'accepted'
+    resume.save()
+    messages.success(request, 'CV aceptado con éxito.')
+    return redirect('history')
+
+def reject_resume(request, resume_id):
+    if 'user_id' not in request.session:
+        return redirect('login')
+    user = User.objects.get(id=request.session['user_id'])
+    resume = Applied_resume.objects.get(id=resume_id)
+    if resume.vacancy.uploaded_by.id != user.id:
+        messages.error(request, 'No tienes permiso para rechazar este CV.')
+        return redirect('history')
+    if resume.state != 'applied':
+        messages.error(request, 'Este CV ya ha sido procesado.')
+        return redirect('history')
+    resume.state = 'rejected'
+    resume.save()
+    messages.success(request, 'CV rechazado con éxito.')
+    return redirect('history')
