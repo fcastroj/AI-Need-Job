@@ -30,26 +30,29 @@ def uploadCVS(request):
         return redirect('login')
     user = User.objects.get(id=request.session['user_id'])
 
-
     if request.method == 'POST':
         form = UploadFileFormOffer(request.POST, request.FILES)
         if form.is_valid() and request.FILES:
-            if request.POST['vacancy'] != "": # vacancy specifications
+            if request.POST['vacancy'] != "":  # vacancy specifications
                 vacancy = request.POST['vacancy']
-                uploaded_file = request.FILES['file']
-                file_extension = uploaded_file.name.split('.')[-1].lower()
-                if file_extension == "pdf":
-                    print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
-                    print("\nvacancy_specifications: \n" + vacancy)
-                    # process with AI
-                else:
-                    print("cv_text: \n" + extract_text(uploaded_file))
-                    print("\nvacancy_specifications: \n" + vacancy)
-                    # process with AI
+                files = request.FILES.getlist('file')  # <-- Cambiado aquí
+                if not files:
+                    messages.warning(request, "No se seleccionaron archivos.")
+                for uploaded_file in files:
+                    file_extension = uploaded_file.name.split('.')[-1].lower()
+                    if file_extension == "pdf":
+                        print("cv_text: \n" + extract_text_from_pdf(uploaded_file))
+                        print("\nvacancy_specifications: \n" + vacancy)
+                        # process with AI
+                    else:
+                        print("cv_text: \n" + extract_text(uploaded_file))
+                        print("\nvacancy_specifications: \n" + vacancy)
+                        # process with AI
+                messages.success(request, "Todos los archivos fueron procesados correctamente.")
             else:
-               messages.warning(request,"No hay un cv inicial") 
+                messages.warning(request, "No hay un cv inicial")
         else:
-            messages.warning(request,"No hay un cv inicial")
+            messages.warning(request, "No hay un cv inicial")
     else:
         form = UploadFileFormOffer()
     return render(request, 'matchingPage.html', {'form': form, 'user': user})
