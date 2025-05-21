@@ -51,6 +51,9 @@
             <div class="d-grid mt-4">
                 <a href="{% url 'save' vacancy.id  %}" class="btn" style="background-color: #009f85; color: #ffff;">Guardar</a>
             </div>
+            <div class="d-grid mt-4">
+                <a href="{% url 'goto_cv_improver' vacancy.id  'published' %}"  class="btn" style="background-color: #009f85; color: #ffff;">Mejora tu cv en base a esta vacante</a>
+            </div>
         </div>
     </div>
     <hr class="my-4">

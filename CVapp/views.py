@@ -320,19 +320,22 @@ def generate_txt_response(text):
 
 
 #
-def redirect_to_cv_inprover(request, vacancy_id):
+def redirect_to_cv_inprover(request, vacancy_id, origin):
     if 'user_id' not in request.session:
         return redirect('login')
     user = User.objects.get(id=request.session['user_id'])
-   
-    saved_vacancy = Saved_vacancy.objects.filter(id=vacancy_id).first()
-    vacancy = Vacancy.objects.filter(id=saved_vacancy.vacancy.id).first()
+    if origin == 'saved':
+            saved_vacancy = Saved_vacancy.objects.filter(id=vacancy_id).first()
+            vacancy = Vacancy.objects.filter(id=saved_vacancy.vacancy.id).first()
+
+    if origin == 'published':
+            vacancy = Vacancy.objects.filter(id=vacancy_id).first()
 
     if not vacancy:
         messages.error(request, "No se encontró la vacante")
         return redirect('feed')
     
-    if Applied_resume.objects.filter(vacancy=vacancy, resume__uploaded_by=user).exists():
+    if Applied_resume.objects.filter(vacancy=vacancy, resume__uploaded_by=user).exists() and origin == 'saved':
         messages.warning(request, "Ya has aplicado a esta vacante")
         return redirect('feed')
     
