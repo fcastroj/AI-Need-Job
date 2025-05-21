@@ -16,7 +16,7 @@ class Resume(models.Model):
     upgraded_cv = models.TextField()
     uploaded_by = models.ForeignKey(User, on_delete=models.CASCADE)
     uploaded_at = models.DateTimeField(auto_now_add=True)
-    embedding = models.BinaryField(default=get_default_array)  # Store the embedding as a binary field
+    embedding = models.BinaryField(default=get_default_array)
     image = models.ImageField(upload_to='images/resumes/', blank=True, null=True)
 
     def __str__(self):
