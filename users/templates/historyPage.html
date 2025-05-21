@@ -52,6 +52,7 @@
                         <th>Acción</th>
                         <th>Fecha</th>
                         <th>Descripción</th>
+                        <th>Estado</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -61,6 +62,18 @@
                         <td>CV Aplicado</td>
                         <td>{{ applied.applied_at|date:"Y-m-d" }}</td>
                         <td>El CV {{ applied.resume.file.name }} fue aplicado a la vacante "{{ applied.vacancy.title }}".</td>
+                        <td>
+                            {% if applied.state == 'applied' %}
+                                Aplicado
+                            {% elif applied.state == 'interview' %}
+                                Entrevista
+                            {% elif applied.state == 'hired' %}
+                                Contratado
+                            {% elif applied.state == 'rejected' %}
+                                Rechazado
+                            {% else %}
+                                Desconocido
+                            {% endif %}
                     </tr>
                     {% endfor %} 
 
@@ -79,7 +92,7 @@
                         <th>Fecha</th>
                         <th>Descripción</th>
                         <th></th>
-                        <th></th>
+                        <th>Mejorar cv con</th>
                     </tr>
                 </thead>
                 <tbody>
