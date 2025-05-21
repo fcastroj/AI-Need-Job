@@ -195,6 +195,12 @@ def apply_vacancy(request, vacancy_id):
         messages.success(request, "Has aplicado a la vacante con éxito")
         return redirect('feed')
 
+    return render(request, 'select_resume.html', {
+        'vacancy': vacancy,
+        'resumes': resumes,
+        'user': user,
+    })
+
 def delete_cv(request, cv_id):
     if 'user_id' not in request.session:
         return redirect('login')
