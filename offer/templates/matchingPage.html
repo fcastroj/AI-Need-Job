@@ -19,5 +19,26 @@
     </div>
 </form>
 
+{% if best_cv %}
+    <div class="alert alert-success mt-4">
+        <h5>El CV más apto para esta vacante:</h5>
+        <strong>{{ best_cv.filename }}</strong> (Score: {{ best_cv.score|floatformat:2 }})
+        <pre style="white-space: pre-wrap;">{{ best_cv.cv_text }}</pre>
+    </div>
+{% endif %}
+
+{% if ranking %}
+    <div class="mt-4">
+        <h5>Ranking de CVs:</h5>
+        <ol>
+        {% for cv in ranking %}
+            <li>
+                <strong>{{ cv.filename }}</strong> (Score: {{ cv.score|floatformat:2 }})
+            </li>
+        {% endfor %}
+        </ol>
+    </div>
+{% endif %}
+
 {% endblock content %}
 
