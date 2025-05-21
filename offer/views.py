@@ -25,31 +25,63 @@ def extract_text(file):
     text = file.read().decode('utf-8')
     return text
 
+def cosine_similarity(a, b):
+    return np.dot(a, b) / (np.linalg.norm(a) * np.linalg.norm(b))
+
 def uploadCVS(request):
     if 'user_id' not in request.session:
         return redirect('login')
     user = User.objects.get(id=request.session['user_id'])
 
+    best_cv = None
+    best_score = -1
+    ranking = []
 
     if request.method == 'POST':
         form = UploadFileFormOffer(request.POST, request.FILES)
         if form.is_valid() and request.FILES:
-            if request.POST['vacancy'] != "": # vacancy specifications
+            if request.POST['vacancy'] != "":
                 vacancy = request.POST['vacancy']
-                uploaded_file = request.FILES['file']
-                file_extension = uploaded_file.name.split('.')[-1].lower()
-                if file_extension == "pdf":
-                    print("cv_text: \n"+ extract_text_from_pdf(uploaded_file))
-                    print("\nvacancy_specifications: \n" + vacancy)
-                    # process with AI
+                files = request.FILES.getlist('file')
+                if not files:
+                    messages.warning(request, "No se seleccionaron archivos.")
                 else:
-                    print("cv_text: \n" + extract_text(uploaded_file))
-                    print("\nvacancy_specifications: \n" + vacancy)
-                    # process with AI
+                    client = OpenAI(api_key=settings.OPENAI_API_KEY)
+                    vacancy_embedding = get_embedding(vacancy, client)
+                    for uploaded_file in files:
+                        file_extension = uploaded_file.name.split('.')[-1].lower()
+                        if file_extension == "pdf":
+                            cv_text = extract_text_from_pdf(uploaded_file)
+                        else:
+                            cv_text = extract_text(uploaded_file)
+                        cv_embedding = get_embedding(cv_text, client)
+                        score = cosine_similarity(vacancy_embedding, cv_embedding)
+                        ranking.append({
+                            'filename': uploaded_file.name,
+                            'cv_text': cv_text,
+                            'score': score,
+                        })
+                        if score > best_score:
+                            best_score = score
+                            best_cv = {
+                                'filename': uploaded_file.name,
+                                'cv_text': cv_text,
+                                'score': score,
+                            }
+                    # Ordenar ranking de mayor a menor score
+                    ranking = sorted(ranking, key=lambda x: x['score'], reverse=True)
+                    messages.success(request, "Todos los archivos fueron procesados correctamente.")
+                    return render(request, 'matchingPage.html', {
+                        'form': form,
+                        'user': user,
+                        'ranking': ranking,
+                        'best_cv': best_cv,
+                        'vacancy': vacancy,
+                    })
             else:
-               messages.warning(request,"No hay un cv inicial") 
+                messages.warning(request, "No hay un cv inicial")
         else:
-            messages.warning(request,"No hay un cv inicial")
+            messages.warning(request, "No hay un cv inicial")
     else:
         form = UploadFileFormOffer()
     return render(request, 'matchingPage.html', {'form': form, 'user': user})
